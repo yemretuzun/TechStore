@@ -1,0 +1,15 @@
+﻿@using System.Security.Claims
+
+@{
+    ViewBag.Title = "Permissions";
+    Layout = "_Layout";
+}
+
+@if (!@User.HasClaim(ClaimTypes.Role, "Administrator"))
+{
+    <h1>403 Forbidden!</h1>
+    <h4 class="alert alert-danger">Bu alana erişim yetkiniz yok!</h4>
+    return;
+}
+
+<h2>Permissions</h2>

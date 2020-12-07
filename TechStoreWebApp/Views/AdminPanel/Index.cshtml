@@ -1,0 +1,72 @@
+﻿@using System.Security.Claims
+@model TechStoreWebApp.Models.ViewModels.Admin.AdminPanelViewModel
+@{
+    ViewData["Title"] = "Admin Panel";
+}
+
+@if (!@User.HasClaim(ClaimTypes.Role, "Administrator"))
+{
+    <h1>403 Forbidden!</h1>
+    <h4 class="alert alert-danger">Bu alana erişim yetkiniz yok!</h4>
+    return;
+}
+<div class="container">
+    <div>
+        <h1>TechStore Admin Panel</h1>
+        <dl class="row"></dl>
+        <hr />
+
+        <div class="card mt-2">
+            <div class="card-header">
+                <h3>Database Yönetimi</h3>
+            </div>
+            <div class="card-body">
+                <div class="btn-group-lg btn-group-sm">
+                    <a class="btn btn-primary" asp-controller="AdminPanel" asp-action="Products">
+                        <i class="fas fa-database"></i>
+                        <span>Products</span>
+                    </a>
+                    <a class="btn btn-primary" asp-controller="AdminPanel" asp-action="Users">
+                        <i class="fas fa-database"></i>
+                        <span>Users</span>
+                    </a>
+                    <a class="btn btn-primary" asp-controller="AdminPanel" asp-action="Roles">
+                        <i class="fas fa-database"></i>
+                        <span>Roles</span>
+                    </a>
+                    <a class="btn btn-primary" asp-controller="AdminPanel" asp-action="Permissions">
+                        <i class="fas fa-database"></i>
+                        <span>Permissions</span>
+                    </a>
+                    <a class="btn btn-primary" asp-controller="AdminPanel" asp-action="Credentials">
+                        <i class="fas fa-database"></i>
+                        <span>Credentials</span>
+                    </a>
+                    <a class="btn btn-primary" asp-controller="AdminPanel" asp-action="CredentialTypes">
+                        <i class="fas fa-database"></i>
+                        <span>CredentialTypes</span>
+                    </a>
+                    <a class="btn btn-primary" asp-controller="AdminPanel" asp-action="CredentialTypes">
+                        <i class="fas fa-database"></i>
+                        <span>Brands</span>
+                    </a>
+
+                </div>
+            </div>
+        </div>
+        <div class="card mt-2">
+            <div class="card-header">
+                <h3>Site istatistikleri</h3><span>Yapılabilir ama acelesi/gerek yok</span>
+            </div>
+            <div class="card-body">
+                Toplam Kullanıcı: 383
+                <hr />
+                Günlük Satılan Ürün: 491
+                <hr />
+                Toplam Satılan Ürün: 7491
+
+            </div>
+        </div>
+    </div>
+</div>
+

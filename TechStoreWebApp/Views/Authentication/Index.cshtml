@@ -1,0 +1,314 @@
+﻿@model TechStoreWebApp.Models.ViewModels.AuthViewModel
+
+@{
+    ViewData["Title"] = "Giriş Yap";
+}
+
+<link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+
+<div class="container">
+
+    <div class="row">
+        <div class="col-md-5 mx-auto">
+            <div id="first">
+                <div class="myform form shadow  border-0">
+                    <div class="logo mb-3">
+                        <div class="col-md-12 text-center">
+                            <h1>Giriş Yap</h1>
+                            <div hidden="@Model.ShowMessage.ToString()" class="alert alert-success" role="alert">
+                                <a aria-valuetext="@Model.Message"></a>
+                            </div>
+                        </div>
+                    </div>
+                    <form id="loginForm" method="post" enctype="multipart/form-data" asp-controller="Authentication" asp-action="Login" name="login">
+                        <div class="form-group">
+                            <label for="Email">Email address</label>
+                            <input type="email" name="Email" class="form-control" id="Email" aria-describedby="emailHelp" placeholder="Enter email">
+                        </div>
+                        <div class="form-group">
+                            <label for="Password">Password</label>
+                            <input type="password" name="Password" id="Password" class="form-control" aria-describedby="emailHelp" placeholder="Enter Password">
+                        </div>
+
+                        <div class="col-md-12 text-center  form-group">
+                            <button type="submit" class=" btn btn-block mybtn btn-primary tx-tfm">Giriş Yap</button>
+                        </div>
+                        <div class="col-md-12 form-group">
+                            @*TODO:*@
+                            <a href="#" class=" text-dark text-left">Şifremi unuttum</a>
+                        </div>
+                        <div class="col-md-12 ">
+                            <div class="login-or">
+                                <hr class="hr-or">
+                                <span class="span-or">veya</span>
+                            </div>
+                        </div>
+                        <div class="col-md-12 mb-3">
+                            <p class="text-center">
+                                <a class="google btn mybtn">
+                                    <i class="fa fa-google-plus">
+                                    </i> Google ile giriş yap
+                                </a>
+                            </p>
+                        </div>
+                        <div class="form-group">
+                            <p class="text-center">Hesabınız yok mu? <a href="#" id="signup">Kaydol</a></p>
+                        </div>
+                        <div class="form-group">
+                            <p class="text-center">Kaydolarak <a href="#" data-toggle="modal" data-target="#termsModal">Kullanım Şartları</a>nı kabul etmiş olursunuz</p>
+                        </div>
+                    </form>
+
+                </div>
+            </div>
+            <div id="second">
+                <div class="myform form shadow  border-0">
+                    <div class="logo mb-3">
+                        <div class="col-md-12 text-center">
+                            <h1>Kaydol</h1>
+                        </div>
+                    </div>
+                    <form id="registrationForm" method="post" enctype="multipart/form-data" asp-controller="Authentication" asp-action="Register" name="registration">
+                        <div class="form-group">
+                            <label for="FirstName">First Name</label>
+                            <input type="text" name="FirstName" class="form-control" id="FirstName" aria-describedby="emailHelp" placeholder="Enter FirstName">
+                        </div>
+                        <div class="form-group">
+                            <label for="Lastname">Last Name</label>
+                            <input type="text" name="LastName" class="form-control" id="LastName" aria-describedby="emailHelp" placeholder="Enter Lastname">
+                        </div>
+                        <div class="form-group">
+                            <label for="Email">Email address</label>
+                            <input type="email" name="Email" class="form-control" id="Email" aria-describedby="emailHelp" placeholder="Enter email">
+                        </div>
+                        <div class="form-group">
+                            <label for="Password">Password</label>
+                            <input type="password" name="Password" id="PasswordSignup" class="form-control" aria-describedby="emailHelp" placeholder="Enter Password">
+                        </div>
+                        <div class="form-group">
+                            <label for="PasswordAgain">Password Again</label>
+                            <input type="password" name="PasswordAgain" id="PasswordAgain" class="form-control" aria-describedby="emailHelp" placeholder="Enter Password Again">
+                        </div>
+                        <div class="form-group">
+                            <label for="PhoneNumber">Phone Number</label>
+                            <input type="text" name="PhoneNumber" id="PhoneNumber" class="form-control" placeholder="Enter Phone Number">
+                        </div>
+                        <div class="form-group">
+                            <label for="Tc">TC Kimlik Numarası</label>
+                            <input type="text" name="Tc" id="Tc" class="form-control" placeholder="TC Kimlik Numaranızı Giriniz">
+                        </div>
+                        <div class="col-md-12 text-center mb-3">
+                            <button type="submit" class=" btn btn-block mybtn btn-primary tx-tfm">
+                                <span class="material-icons align-top"> person_add_alt_1 </span>
+                                <span>KAYIT OL</span>
+                            </button>
+                        </div>
+                        <div class="col-md-12 ">
+                            <div class="form-group">
+                                <p class="text-center"><a href="#" id="signin">Zaten hesabınız var mı?</a></p>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="modal fade" id="termsModal"  data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog modal-dialog-scrollable">
+            <div class="modal-content">
+      
+                <!-- Modal Header -->
+                <div class="modal-header">
+                    <h4 class="modal-title">TechStore Kullanım Şartları</h4>
+                    <button type="button" class="close" data-dismiss="modal">×</button>
+                </div>
+        
+                <!-- Modal body -->
+                <div class="modal-body">
+                    @if (@Model.TermsOfConditions != null)
+                    {
+                        @Html.Raw(@Model.TermsOfConditions)
+                    }
+                </div>
+        
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-success" data-dismiss="modal">Onayla</button>
+                </div>
+        
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<style scoped>
+
+    a {
+        text-decoration: none !important;
+    }
+
+    h1, h2, h3 {
+        font-family: 'Roboto', sans-serif;
+    }
+
+    .myform {
+        position: relative;
+        display: -ms-flexbox;
+        display: flex;
+        padding: 1rem;
+        -ms-flex-direction: column;
+        flex-direction: column;
+        width: 100%;
+        pointer-events: auto;
+        background-color: #fff;
+        background-clip: padding-box;
+        border: 1px solid rgba(0,0,0,.2);
+        border-radius: 1.1rem;
+        outline: 0;
+        max-width: 500px;
+    }
+
+    .tx-tfm {
+        text-transform: uppercase;
+    }
+
+    .mybtn {
+        border-radius: 50px;
+    }
+
+    .login-or {
+        position: relative;
+        color: #aaa;
+        margin-top: 10px;
+        margin-bottom: 10px;
+        padding-top: 10px;
+        padding-bottom: 10px;
+    }
+
+    .span-or {
+        display: block;
+        position: absolute;
+        left: 50%;
+        top: -2px;
+        margin-left: -25px;
+        background-color: #fff;
+        width: 50px;
+        text-align: center;
+    }
+
+    .hr-or {
+        height: 1px;
+        margin-top: 0px !important;
+        margin-bottom: 0px !important;
+    }
+
+    .google {
+        color: #666;
+        width: 100%;
+        height: 40px;
+        text-align: center;
+        outline: none;
+        border: 1px solid lightgrey;
+    }
+
+    form .error {
+        color: #ff0000;
+    }
+
+    .error {
+        color: #ff0000;
+    }
+
+    #second {
+        display: none;
+    }
+</style>
+
+@section Scripts {
+    <script type="text/javascript">
+
+        $().ready(function () {
+            $("#signup").click(function () {
+                $("#first").fadeOut("fast",
+                    () => {
+                        $("#second").fadeIn("fast");
+                    });
+            });
+
+            $("#signin").click(() => {
+                $("#second").fadeOut("fast",
+                    () => {
+                        $("#first").fadeIn("fast");
+                    });
+
+            });
+
+
+            $(function () {
+                $("form[name='login']").validate({
+                    rules: {
+                        Email: {
+                            required: true,
+                            email: true
+                        },
+                        Password: {
+                            required: true,
+                        }
+                    },
+                    messages: {
+                        Email: "Please enter a valid email address",
+
+                        Password: {
+                            required: "Please enter password"
+                        }
+                    },
+                    submitHandler: function (form) {
+                        form.submit();
+                    }
+                });
+            });
+
+
+            $(function () {
+
+                $("form[name='registration']").validate({
+                    rules: {
+                        Email: {
+                            required: true,
+                            email: true
+                        },
+                        Password: {
+                            required: true,
+                            minlength: 5
+                        },
+                        PasswordAgain: {
+                            required: true,
+                            equalTo: "#PasswordSignup"
+                        },
+                        FirstName: { required: true },
+                        LastName: { required: true },
+                        PhoneNumber: { required: true },
+                        Tc: { required: true }
+                    },
+
+                    messages: {
+                        firstname: "Please enter your firstname",
+                        LastName: "Please enter your lastname",
+                        password: {
+                            required: "Please provide a password",
+                            minlength: "Your password must be at least 5 characters long"
+                        },
+                        email: "Please enter a valid email address"
+                    },
+
+                    submitHandler: function (form) {
+                        form.submit();
+                    }
+                });
+            });
+
+
+        })
+    </script>
+}

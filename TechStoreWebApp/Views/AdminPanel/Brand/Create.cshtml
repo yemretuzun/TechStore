@@ -1,0 +1,45 @@
+﻿@using System.Security.Claims
+@model SharedModels.Brand
+
+@{
+    ViewData["Title"] = "Marka oluştur";
+    Layout = "_Layout";
+}
+
+@if (!@User.HasClaim(ClaimTypes.Role, "Administrator"))
+{
+    <h1>403 Forbidden!</h1>
+    <h4 class="alert alert-danger">Bu alana erişim yetkiniz yok!</h4>
+    return;
+}
+
+<div class="container">
+    <h4>Yeni ürün oluştur</h4>
+    <hr />
+    <div class="row">
+        <div class="col-md-4">
+            <form class="form-group" asp-controller="AdminPanel" asp-action="brands/create/" method="post">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <div>
+                    <div class="form-group">
+                        <label for="Name">Name:</label>
+                        <input class="form-control" type="text" name="Name" id="Name" placeholder="Marka adı" />
+                    </div>
+                    <div class="form-group">
+                        <label>Logo:</label>
+                        <input class="form-control" type="text" id="LogoImage" name="LogoImages" placeholder="Url"
+                               multiple aria-multiselectable="true" />
+                    </div>
+
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-primary form-control">Kaydet</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div>
+        <a asp-action="Brands">Brands tablosuna dön</a>
+    </div>
+</div>

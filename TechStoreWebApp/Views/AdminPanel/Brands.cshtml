@@ -1,0 +1,110 @@
+﻿@model TechStoreWebApp.Models.ViewModels.Admin.BrandsViewModel
+@inject TechStoreWebApp.IUserManager UserManager
+@using System.Security.Claims
+
+@{
+    ViewBag.Title = "Markalar";
+    Layout = "_Layout";
+}
+
+@if (!@User.HasClaim(ClaimTypes.Role, "Administrator"))
+{
+    <h1>403 Forbidden!</h1>
+    <h4 class="alert alert-danger">Bu alana erişim yetkiniz yok!</h4>
+    return;
+}
+
+<div class="container-fluid">
+
+    <div>
+        @* DB adı *@
+        <h2 class="text-primary float-left" style="cursor: pointer"><i class="fas fa-database mr-1 text-black-50"></i> Brands</h2>
+        @* Yeni marka ekle *@
+        <form class="float-right" method="get">
+            <button class="btn btn-success mb-1" type="submit" asp-controller="AdminPanel" asp-action="brands/create">
+                <i class="fas fa-plus-square mr-1 text-light"></i> Ekle
+            </button>
+        </form>
+    </div>
+
+    @* Tabloda aramaya yap *@
+    <div class="form-group">
+        <input class="form-control" id="searchInput" type="text" placeholder="Ara..">
+    </div>
+
+    @* Products tablosu *@
+    <table id="productsTable" class="table table-dark table-striped shadow">
+        <thead>
+            <tr class="sticky-top bg-dark">
+                <th>Logo</th>
+                <th>BrandId</th>
+                <th>Name</th>
+                <th>işlemler</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (@Model.Brands.Any())
+            {
+                @foreach (var brand in @Model.Brands)
+                {
+                    <tr>
+                        <td>
+                            @if (string.IsNullOrEmpty(@brand.LogoImage))
+                            {
+                                <i class="fas fa-image mr-1 text-light ml-1" style="font-size: 36px"></i>
+                            }
+                            else
+                            {
+                                <img class="img-fluid" src="@brand.LogoImage" style="max-height: 56px; max-width: 56px; min-width: 34px;" />
+                            }
+                        </td>
+                        <td>@brand.Id</td>
+                        <td>@brand.Name</td>
+                        <td>
+                            <div class="btn-group">
+                                <form data-toggle="tooltip" title="Düzenle">
+                                    <button class="btn btn-warning" type="submit" asp-controller="AdminPanel" asp-action="brands/details/{id}" asp-route-id="@brand.Id">
+                                        <i class="fas fa-edit mr-1 text-light"></i>
+                                    </button>
+                                </form>
+                                <form data-toggle="tooltip" title="Detaylar">
+                                    <button class="btn btn-secondary" type="submit" asp-controller="AdminPanel" asp-action="brands/details/{id}" asp-route-id="@brand.Id">
+                                        <i class="fas fa-info-circle mr-1 text-light"></i>
+                                    </button>
+                                </form>
+                                <form data-toggle="tooltip" title="Sil">
+                                    <button class="btn btn-danger" data-toggle="modal" type="submit" asp-controller="AdminPanel" asp-action="brands/details/{id}" asp-route-id="@brand.Id">
+                                        <i class="fas fa-trash-alt mr-1 text-light" asp-controller="AdminPanel" asp-action="DeleteProduct" asp-route-id="@brand.Id"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+
+</div>
+
+<style scoped>
+</style>
+
+@section Scripts
+{
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+            $('[data-toggle="tooltip"]').tooltip();
+        });
+
+        $(document).ready(function(){
+            $("#searchInput").on("keyup", function() {
+                var value = $(this).val().toLowerCase();
+                $("#productsTable tr").filter(function() {
+                    $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+                });
+            });
+        });
+    </script>
+}
