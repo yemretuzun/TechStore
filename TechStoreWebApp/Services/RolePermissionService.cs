@@ -12,7 +12,7 @@ namespace TechStoreWebApp.Services
 {
     public class RolePermissionService : BaseService<RolePermission>
     {
-        public RolePermissionService() : base(@"http://localhost:8235/api/RolePermission/")
+        public RolePermissionService() : base(@"/api/RolePermission/")
         {
         }
        

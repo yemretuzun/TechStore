@@ -1,7 +1,9 @@
-﻿using MongoDB.Bson.Serialization.Attributes;
+﻿using System.Collections.Generic;
+using MongoDB.Bson.Serialization.Attributes;
 
 namespace SharedModels
 {
+
     /// <summary>
     /// Ürün kategorisi
     /// </summary>
@@ -18,5 +20,12 @@ namespace SharedModels
         /// Kategori görseli.
         /// </summary>
         public string Image { get; set; }
+
+        /// <summary>
+        /// Kategoriye ait teknik özellikler
+        /// </summary>
+        [BsonRequired]
+        public List<string> Specs { get; set; }
+
     }
 }

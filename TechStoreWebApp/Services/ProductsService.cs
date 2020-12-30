@@ -6,7 +6,7 @@ namespace TechStoreWebApp.Services
 {
     public class ProductsService : BaseService<Product>
     {
-        public ProductsService() : base(@"http://localhost:8235/api/Products/")
+        public ProductsService() : base(@"/api/Products/")
         {
         }
     }

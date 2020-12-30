@@ -1,0 +1,217 @@
+﻿@model TechStoreWebApp.Models.ViewModels.Admin.ProductsViewModel
+@inject TechStoreWebApp.IUserManager UserManager
+@using System.Security.Claims
+
+@{
+    ViewBag.Title = "Ürünler";
+    Layout = "_Layout";
+}
+
+@* Admin değilse bu sayfayı göremez *@
+@if (!@User.HasClaim(ClaimTypes.Role, "Administrator"))
+{
+    <h1>403 Forbidden!</h1>
+    <h4 class="alert alert-danger">Bu alana erişim yetkiniz yok!</h4>
+    return;
+}
+
+<div class="container-fluid w3-container">
+
+    <div>
+        @* DB adı *@
+        <h2 class="text-primary float-left" style="cursor: pointer"><i class="fas fa-database mr-1 text-black-50"></i> Products</h2>
+        @* Yeni ürün ekle *@
+        <form class="float-right">
+            <button class="btn btn-success mb-1" type="submit" asp-controller="Products" asp-action="create">
+                <i class="fas fa-plus-square mr-1 text-light"></i> Ekle
+            </button>
+        </form>
+    </div>
+
+    @* Tabloda aramaya yap *@
+    <div class="form-group">
+        <input class="form-control" id="searchInput" type="text" placeholder="Ara..">
+    </div>
+
+    @* Products tablosu *@
+    <table id="productsTable" class="table table-dark table-striped shadow">
+        <thead>
+            <tr class="sticky-top bg-dark">
+                <th onclick="sort(1)"><i class="fas fa-sort"></i> #</th>
+                <th onclick="sort(2)"></th>
+                <th onclick="sort(3)"><i class="fas fa-sort"></i> ProductId</th>
+                <th onclick="sort(4)"><i class="fas fa-sort"></i> Title</th>
+                <th onclick="sort(5)"><i class="fas fa-sort"></i> Fiyat</th>
+                <th onclick="sort(6)"><i class="fas fa-sort"></i> Marka</th>
+                <th onclick="sort(7)"><i class="fas fa-sort"></i> Kategori</th>
+                <th onclick="sort(8)"><i class="fas fa-sort"></i> Stok</th>
+                <th>İşlemler</th>
+            </tr>
+        </thead>
+        <tbody>
+            @{
+                var i = 1;
+
+                @foreach (var product in @Model.Products)
+                {
+                    <tr class="item">
+                        <td>@i</td>
+                        <td>
+                            @if (@product.Images != null)
+                            {
+                                if (!@product.Images.Any() || string.IsNullOrEmpty(@product.Images.ElementAt(0)))
+                                {
+                                    <i class="fas fa-image mr-1 text-light ml-1" style="font-size: 36px"></i>
+                                }
+                                else
+                                {
+                                    <img class="img-responsive" src="@product.Images.ElementAt(0)" width="56" height="56" loading="lazy" />
+                                }
+                            }
+                            else
+                            {
+                                <i class="fas fa-image mr-1 text-light ml-1" style="font-size: 36px"></i>
+                            }
+
+                        </td>
+                        @* Ürün ID si *@
+                        <td>@product.Id</td>
+                        <td>
+
+                            @if (@product.Title.Length > 25)
+                            {
+                                <span>@product.Title.Substring(0, 25)...</span>
+                            }
+                            else
+                            {
+                                @product.Title
+                            }
+
+                        </td>
+                        @* Ürün fiyatı *@
+                        <td>@product.Price <i class="fas fa-lira-sign mr-1 text-light"></i></td>
+                        @* Ürünün markası *@
+                        <td>
+                            @if (!string.IsNullOrEmpty(@product.BrandId))
+                            {
+                                @Model.BrandService.GetById(@product.BrandId).Name
+                            }
+                            else
+                            {
+                                <p>-</p>
+                            }
+                        </td>
+                        @* Ürün kategorisi *@
+                    <td>
+                        @if (@product.CategoryId != null)
+                        {
+                            @Model.ProductCategory(@product.CategoryId).Name
+                        }
+                        else
+                        {
+                            <p>-</p>
+                        }
+                    </td>
+                        @* Ürünün stok durumu *@
+                        <td>@product.Stock</td>
+                        @* işlemler: düzenle/detaylar/sil *@
+                        <td>
+                            <div class="btn-group">
+                                <form data-toggle="tooltip" title="Düzenle">
+                                    <button class="btn btn-warning" type="submit" asp-controller="Products" asp-action="edit/{productId}" asp-route-productId="@product.Id">
+                                        <i class="fas fa-edit mr-1 text-light"></i>
+                                    </button>
+                                </form>
+                                <form data-toggle="tooltip" title="Detaylar">
+                                    <button class="btn btn-secondary" type="submit" asp-controller="Products" asp-action="edit/{productId}" asp-route-productId="@product.Id">
+                                        <i class="fas fa-info-circle mr-1 text-light"></i>
+                                    </button>
+                                </form>
+                                <form id="deleteForm" data-toggle="tooltip" title="Sil" data="@product.Id" data-title="@product.Title">
+                                    <button id="deleteBtn" class="btn btn-danger" data-toggle="modal" type="submit" asp-controller="Products" asp-action="delete/{productId}" asp-route-productId="@product.Id">
+                                        <i class="fas fa-trash-alt mr-1 text-light"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    i++;
+                }
+            }
+        </tbody>
+    </table>
+
+</div>
+
+<style scoped>
+    th {
+        cursor: pointer;
+    }
+
+    .fa-sort {
+        opacity: .5;
+    }
+</style>
+
+@section Scripts
+{
+    <script type="text/javascript">
+
+        // İşlemlerin (düzenle/detaylar/sil) iconları üzerinde açıklamalarını göster
+        $(document).ready(function () {
+            $('[data-toggle="tooltip"]').tooltip();
+        });
+
+        $(document).ready(function () {
+
+            // Tabloda arama işlem yap
+            $("#searchInput").on("keyup",
+                function () {
+                    var value = $(this).val().toLowerCase();
+                    $("#productsTable tr").filter(function () {
+                        $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+                    });
+                });
+        });
+
+        // Tabloyu satıra göre sırala
+        function sort(data) {
+            w3.sortHTML('#productsTable', '.item', `td:nth-child(${data})`);
+        }
+
+        // Ürün sil
+        $('form#deleteForm').submit((e) => {
+
+            swal({
+                title: "Emin misin?",
+                text: `"${e.target.getAttribute('data-title')}"\n\n ürünü silinecek ve bu işlemi geri alamazsın!`,
+                icon: "warning",
+                buttons: true,
+                dangerMode: true
+            })
+                .then((willDelete) => {
+                    if (willDelete) {
+                        $.ajax({
+                            url: `delete/${e.target.getAttribute("data")}`,
+                            success: function (data) {
+                                swal("Ürün başarıyla silindi!", { icon: "success" });
+                                location.reload(true);
+                            },
+                            error: function (xhr, ajaxOptions, thrownError) {
+                                swal("Ürünü silerken sorun oluştu!", "", "error");
+                                console.log(xhr);
+                                console.log(ajaxOptions);
+                                console.log(thrownError);
+                            }
+                        });
+                    }
+                });
+
+            return false;
+        });
+
+
+
+
+    </script>
+}

@@ -1,0 +1,23 @@
+{
+  "version": "1.0",
+  "defaultProvider": "cdnjs",
+  "libraries": [
+    {
+      "library": "tailwindcss@2.0.2",
+      "destination": "wwwroot/lib/tailwindcss/"
+    },
+    {
+      "library": "jquery-bar-rating@1.2.2",
+      "destination": "wwwroot/lib/jquery-bar-rating/"
+    },
+    {
+      "library": "lity@2.4.1",
+      "destination": "wwwroot/lib/lity/"
+    },
+    {
+      "provider": "filesystem",
+      "library": "D:\\DERS\\4. Sýnýf\\1. Dönem\\Bitirme Projesi\\ckeditor5\\build\\",
+      "destination": "wwwroot/lib/ck/build/"
+    }
+  ]
+}

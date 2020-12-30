@@ -1,0 +1,128 @@
+﻿@using System.Security.Claims
+@model SharedModels.Product
+
+@{
+    var vm = new TechStoreWebApp.Models.ViewModels.Admin.ProductsViewModel();
+    ViewData["Title"] = "Yeni ürün";
+    Layout = "_Layout";
+}
+
+@if (!@User.HasClaim(ClaimTypes.Role, "Administrator"))
+{
+    <h1>403 Forbidden!</h1>
+    <h4 class="alert alert-danger">Bu alana erişim yetkiniz yok!</h4>
+    return;
+}
+
+<div class="container">
+    <h4>Yeni ürün oluştur</h4>
+
+    <hr />
+    <div class="row">
+        <div class="col-md-4">
+            <form id="addProductForm" class="form-group" asp-controller="Products" asp-action="create" method="post">
+                <div>
+                    <!-- Ürün adı -->
+                    <div class="form-group">
+                        <label for="Title">Title:</label>
+                        <input class="form-control" type="text" name="Title" id="Title"
+                               placeholder="Ürün adı" />
+                    </div>
+                    <!-- Fiyat -->
+                    <div class="form-group">
+                        <label for="Price">Fiyat:</label>
+                        <input class="form-control" type="text" name="Price" id="Price"
+                               placeholder="0,0 TL" />
+                    </div>
+                    <!-- Ürün görselleri -->
+                    <div id="gorsellerDiv" class="form-group">
+                        <div>
+                            <label>Görseller:</label>
+                            <span class="btn btn-outline-success btn-sm" onclick="addImg()">+</span>
+                        </div>
+                        <input id="Images" name="Images" type="hidden"/>
+                        <input id="imgInput" class="form-control my-1" type="text" oninput="defaultImgChanged(this)"
+                               placeholder="Url"/>
+                    </div>
+                    <!-- Marka -->
+                    <div class="form-group">
+                        <label>Marka:</label>
+
+                        @Html.DropDownList("BrandId", @vm.Brands, "Marka seç", new { @class = "form-control", @name = "BrandId", @id = "BrandId", })
+                    </div>
+                    <!-- Kategori -->
+                    <div class="form-group">
+                        <label>Kategori:</label>
+
+                        @Html.DropDownList("CategoryId", @vm.Categories, "Kategori seç",
+                            new
+                            {
+                                @class = "form-control", @name = "CategoryId", @id = "CategoryId", 
+                            })
+                    </div>
+
+                    <div class="form-group mt-3">
+                        <button type="submit" class="btn btn-success form-control">Kaydet</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="mt-3">
+        <a asp-controller="Products" asp-action="index"><i class="fas fa-angle-double-left"></i> Products tablosuna dön</a>
+    </div>
+</div>
+
+@section Scripts
+{
+    <script type="text/javascript">
+
+
+        let images = {};
+        let imgList = [];
+
+        $().ready(() => {
+            images["default"] = "";
+            updateValue();
+        });
+
+        function addImg() {
+            const id = _.uniqueId('img_');
+            $('#gorsellerDiv').append('<div id="' +
+                id +
+                '"  class="row m-0 p-0"><input class="col-10 my-1 form-control" type="text" placeholder="Url" oninput="imgChanged(this)"/>' +
+                '<span class="ml-1 btn text-danger" onclick="delImgInput(this)">X</span></div>');
+            $('#' + id).hide().fadeIn(250);
+        }
+
+
+        function delImgInput(el) {
+            delete images[$(el).parent().attr('id')];
+            updateValue();
+
+            $(el).parent().fadeOut(200, function() { $(this).remove(); });
+        }
+
+        function defaultImgChanged(el) {
+            images["default"] = el.value;
+            updateValue();
+        }
+
+        function imgChanged(el) {
+            images[$(el).parent().attr('id')] = el.value;
+            updateValue();
+
+        }
+
+        // image listesine dönüştür 
+        function updateValue() {
+            $('#Images').attr('value', Object.values(images));
+        }
+
+
+    </script>
+
+}
+
+

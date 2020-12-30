@@ -1,35 +1,124 @@
 ﻿@inject TechStoreWebApp.IUserManager UserManager
 @using System.Security.Claims
+@using TechStoreWebApp.Models.ViewModels.Admin
 
 @{
-    ViewData["Title"] = "Home Page";
+    var productViewModel = new ProductsViewModel();
+    ViewData["Title"] = "Anasayfa";
 }
 
 <div class="container">
-    <div class="text-center">
+    <div class="text-center align-middle jumbotron mt-3">
         <h1 class="display-4">TechStore</h1>
     </div>
-    <p></p>
-    <div>
-        <span class="">DEBUG</span>
+
+    <div class="text-xl text-gray-500">
+        MSI
     </div>
-    <div class="">
-        <span class="">User.Identity.IsAuthenticated:</span> @User.Identity.IsAuthenticated
+    <div class="mt-3 grid sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 sm:gap-3 md:gap-4">
+        @if (productViewModel.Products.Any())
+        {
+            var list = productViewModel.Products.Where(p => p.Title.Contains("MSI", StringComparison.InvariantCultureIgnoreCase)).ToList().Take(5);
+
+            @for (var i = 0; i < list.Count(); i++)
+            {
+                <div class="card max-w-md shadow-md p-5 text-center d-flex flex-column align-items-around">
+                    <div class="max-w-lg mt-auto text-center">
+                        <img class="img-responsive" width="120" height="120" src="@list.ElementAtOrDefault(i)?.Images.FirstOrDefault()" />
+                    </div>
+                    <div class="mt-auto truncate ">
+                        @list.ElementAtOrDefault(i)?.Title
+                    </div>
+                    <div class="mt-auto">
+                        <select id="0_@i" data-ratings="@list.ElementAtOrDefault(i)?.Ratings">
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                        </select>
+                    </div>
+                    <div class="mt-auto">
+                        <a href="#" class="btn btn-block bg-blue-600 text-white">Sepete Ekle</a>
+                    </div>
+                </div>
+            }
+        }
     </div>
-    @if (this.User.Identity.IsAuthenticated)
-    {
-        <div class="">
-            <span class="">UserManager.GetCurrentUser(this.Context).Name:</span> @UserManager.GetCurrentUser(this.Context).FirstName
-        </div>
-        <div class="">
-            <span class="">User.HasClaim(ClaimTypes.Role, "Administrator"):</span> @User.HasClaim(ClaimTypes.Role, "Administrator")
-        </div>
-        <div class="">
-            <span class="">User.HasClaim("Permission", "DoEverything"):</span> @User.HasClaim("Permission", "DoEverything")
-        </div>
-    }
+
+    <div class="mt-5 text-xl text-gray-500">
+        Monster
+    </div>
+    <div class="mt-3 grid sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 sm:gap-3 md:gap-4">
+        @if (productViewModel.Products.Any())
+        {
+            var list = productViewModel.Products.Where(p => p.Title.Contains("Monster", StringComparison.InvariantCultureIgnoreCase)).ToList().Take(5);
+
+            @for (var i = 0; i < list.Count(); i++)
+            {
+                <div class="card max-w-md shadow-md p-5 text-center d-flex flex-column align-items-around">
+                    <div class="max-w-lg mt-auto text-center">
+                        <img class="img-responsive" width="120" height="120" src="@list.ElementAtOrDefault(i)?.Images.FirstOrDefault()" />
+                    </div>
+                    <div class="mt-auto overflow-clip overflow-hidden">
+                        @list.ElementAtOrDefault(i)?.Title
+                    </div>
+                    <div class="mt-auto">
+                        <select id="1_@i" data-ratings="@list.ElementAtOrDefault(i)?.Ratings">
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                        </select>
+                    </div>
+                    <div class="mt-auto">
+                        <a href="#" class="btn btn-block bg-blue-600 text-white">Sepete Ekle</a>
+                    </div>
+                </div>
+            }
+        }
+    </div>
 </div>
 
 <style scoped>
-   
+    .card {
+        min-height: 26em;
+        max-height: 26em;
+    }
+     
 </style>
+
+@section Scripts
+{
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-bar-rating/1.2.1/themes/fontawesome-stars.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-bar-rating/1.2.1/themes/bars-reversed.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-bar-rating/1.2.1/jquery.barrating.min.js"></script>
+    <script type="text/javascript">
+        $(function () {
+
+            for (var i = 0; i < 5; i++) {
+                let id = '#0_' + i;
+
+                $(id).barrating({
+                    theme: 'fontawesome-stars',
+                    initialRating: $(id).attr('data-ratings'),
+                    readonly: true
+                });
+            }
+
+            for (var i = 0; i < 5; i++) {
+                let id = '#1_' + i;
+
+                $(id).barrating({
+                    theme: 'fontawesome-stars',
+                    initialRating: $(id).attr('data-ratings'),
+                    readonly: true
+                });
+            }
+
+        });
+    </script>
+}

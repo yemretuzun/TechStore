@@ -56,6 +56,10 @@ namespace TechStoreAPI.Services
             return Collection.GetByFilter(filter);
         }
 
+        public List<TModel> GetAllByFilter(Expression<Func<TModel, bool>> filter)
+        {
+            return Collection.GetAllByFilter(filter);
+        }
 
         public TModel Create(TModel obj)
         {

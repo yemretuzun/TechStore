@@ -14,12 +14,13 @@ namespace TechStoreWebApp.Services
     public class BaseService<TModel> where TModel : BaseModel
     {
         public readonly HttpClient Client;
+        public readonly string HostUrl = "http://localhost:8235";
 
         public BaseService(string baseAddress)
         {
             Client = new HttpClient()
             {
-                BaseAddress = new Uri(baseAddress)
+                BaseAddress = new Uri(@$"{HostUrl}{baseAddress}")
             };
         }
 
@@ -74,6 +75,7 @@ namespace TechStoreWebApp.Services
             }
             catch (Exception)
             {
+                // ignored
             }
         }
 

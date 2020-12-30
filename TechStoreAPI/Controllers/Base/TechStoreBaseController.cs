@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using Newtonsoft.Json;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
@@ -37,11 +34,11 @@ namespace TechStoreAPI.Controllers.Base
         {
             try
             {
-                var users = Service.GetAll();
+                var obj = Service.GetAll();
 
-                users.ForEach(user => user.JsonSerialize());
+                obj.ForEach(user => user.JsonSerialize());
 
-                return Ok(users);
+                return Ok(obj);
             }
             catch (Exception exc)
             {
@@ -56,9 +53,9 @@ namespace TechStoreAPI.Controllers.Base
         {
             try
             {
-                var user = Service.GetById(id);
+                var obj = Service.GetById(id);
 
-                return Ok(user.JsonSerialize());
+                return Ok(obj.JsonSerialize());
             }
             catch (Exception exc)
             {
@@ -91,7 +88,7 @@ namespace TechStoreAPI.Controllers.Base
 
         }
 
-        [HttpPatch("{id}")]
+        [HttpPatch]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public IActionResult Patch([FromBody] TModel obj)

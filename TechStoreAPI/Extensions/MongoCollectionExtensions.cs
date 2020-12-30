@@ -31,6 +31,11 @@ namespace TechStoreAPI.Extensions
             return collection.Find(filter).ToList().FirstOrDefault();
         }
 
+        public static List<T> GetAllByFilter<T>(this IMongoCollection<T> collection, Expression<Func<T, bool>> filter)
+        {
+            return collection.Find(filter).ToList();
+        }
+
         #endregion
 
         // Create işlemleri

@@ -6,9 +6,10 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - TechStoreWebApp</title>
+    <title>@ViewData["Title"] | TechStore</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" />
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
     @*Google Fonts*@
     <link rel="preconnect" href="https://fonts.gstatic.com">
     <link href="https://fonts.googleapis.com/css2?family=Lato&family=Open+Sans&family=Roboto&display=swap" rel="stylesheet">
@@ -19,95 +20,344 @@
     @*w3.js*@
     <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
     <script src="https://www.w3schools.com/lib/w3.js"></script>
+    @*Sweet Alert*@
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+    @*Lodash*@
+    <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.20/lodash.min.js"></script>
+    @*Tailwind css*@
+    <link rel="stylesheet" href="~/lib/tailwindcss/tailwind.min.css" />
+    <link rel="stylesheet" href="~/lib/tailwindcss/components.min.css" />
+    <link rel="stylesheet" href="~/lib/tailwindcss/utilities.min.css" />
+
+    <style>
+        * {
+            font-family: 'Century Gothic', sans-serif;
+        }
+
+        .navbar {
+            background-color: #F4F4F4;
+        }
+
+        body {
+            background: #fbf9fa !important;
+            color: #0e0220 !important;
+        }
+    </style>
 </head>
 <body>
-<header>
-    <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-        <div class="container-fluid">
-            @*Logo*@
-            <a class="navbar-brand p-3" asp-area="" asp-controller="Home" asp-action="Index">
-                <span class="p-3 mr-1 bg-dark text-light">
-                    <i class="fas fa-lira-sign"></i>
-                    <i class="fab fa-stripe-s"></i>
-                </span> TechStore
-            </a>
+    <!-- Navbar -->
+    <header>
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light  border-bottom">
+            <div class="container-fluid">
+                @*Logo*@
+                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">
+                    <img class="img-responsive" src="~/logo.png" width="200" />
+                </a>
 
-            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                    aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between ">
-                <ul class="navbar-nav mr-auto">
-                    <li class="nav-item">
-                        <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Anasayfa</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                    </li>
-                </ul>
-                <ul class="navbar-nav">
-                    @if (@User.HasClaim(ClaimTypes.Role, "Administrator"))
-                    {
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                        aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between ">
+                    <ul class="navbar-nav mr-auto">
                         <li class="nav-item">
-                            <div class="btn-group">
-                                <button type="button" class="btn btn-danger dropdown-toggle" data-toggle="dropdown">
-                                    Admin Panel
-                                </button>
-                                <div class="dropdown-menu">
-                                    <a class="dropdown-item bg-danger text-light" asp-controller="AdminPanel" asp-action="Index">Panel</a>
-                                    <a class="dropdown-item" asp-controller="AdminPanel" asp-action="products">Products</a>
-                                    <a class="dropdown-item" asp-controller="AdminPanel" asp-action="brands">Brands</a>
-                                    <vc:></vc:>
-                                    @*<a class="dropdown-item" asp-controller="AdminPanel" asp-action="Users">Users</a>            *@
-                                    @*<a class="dropdown-item" asp-controller="AdminPanel" asp-action="Roles">Roles</a>            *@
-                                    @*<a class="dropdown-item" asp-controller="AdminPanel" asp-action="Permissions">Permissions</a>*@
-                                    @*<a class="dropdown-item" asp-controller="AdminPanel" asp-action="Credentials">Credentials</a>*@
-                                </div>
-                            </div>
-                            <a class="nav-link text-dark" asp-area="" asp-controller="AdminPanel" asp-action="Index">
-                            </a>
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Anasayfa</a>
                         </li>
-                    }
-                    <li class="nav-item">
-                        @if (!User.Identity.IsAuthenticated)
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                        </li>
+                    </ul>
+                    <ul class="navbar-nav">
+                        <!-- Admin panel -->
+                        @if (@User.HasClaim(ClaimTypes.Role, "Administrator"))
                         {
-                            <a class="btn btn-success text-light" asp-area="" asp-controller="Authentication" asp-action="Index">
-                                <i class="fas fa-sign-in-alt"></i>
-                                <span>Giriş Yap</span>
-                            </a>
+                            <li class="nav-item mx-2">
+                                <div class="btn-group">
+                                    <button type="button" class="btn btn-danger dropdown-toggle" data-toggle="dropdown">
+                                        <i class="fab fa-whmcs"></i> ADMIN
+                                    </button>
+                                    <div class="dropdown-menu">
+                                        <a class="dropdown-item bg-danger text-light toast-body" asp-controller="AdminPanel" asp-action="Index"><i class="fas fa-home mr-2 text-white"></i>Panel</a>
+                                        <a class="dropdown-item" asp-controller="Products" asp-action="index"> <i class="fas fa-database mr-2 text-secondary"></i>Products</a>
+                                        <a class="dropdown-item" asp-controller="AdminPanel" asp-action="brands"> <i class="fas fa-database mr-2 text-secondary"></i>Brands</a>
+                                        <a class="dropdown-item" asp-controller="AdminPanel" asp-action="Users"> <i class="fas fa-database mr-2 text-secondary"></i>Users</a>
+                                        <a class="dropdown-item" asp-controller="Categories" asp-action="Index"> <i class="fas fa-database mr-2 text-secondary"></i>Categories</a>
+                                    </div>
+                                </div>
+                                <a class="nav-link text-dark" asp-area="" asp-controller="AdminPanel" asp-action="Index">
+                                </a>
+                            </li>
+                        }
+
+
+                        <!-- Hesabım / Giriş yap -->
+                        @if (User.Identity.IsAuthenticated)
+                        {
+                            <li class="nav-item">
+                                <div class="btn-group">
+                                    <button type="button" class="btn dropdown-toggle" data-toggle="dropdown">
+                                        <div class=" mini-cart-price float-left">
+                                            <div>
+                                                <div class="text-truncate">
+                                                    <span class="my-cart-text header-span">@UserManager.GetCurrentUser(Context).FirstName</span>
+                                                </div>
+                                                <div class="">
+                                                    <span class="header-span">Hesabım</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <i class="fas fa-user align-middle"></i>
+                                    </button>
+                                    <div class="dropdown-menu w-100">
+                                        <div class="text-muted">
+                                            <a class="btn btn-block" type="submit" asp-controller="User" asp-action="hesabim">
+                                                <span> Hesabım</span>
+                                            </a>
+                                            <a class="btn btn-block" type="submit" asp-controller="User" asp-action="hesabim">
+                                                <span> Siparişlerim</span>
+                                            </a>
+                                            <a class="btn btn-block" type="submit" asp-controller="User" asp-action="hesabim">
+                                                <span> Favorilerim</span>
+                                            </a>
+                                            <form class="text-truncate border-top" method="post">
+                                                <button class="btn btn-block " type="submit" asp-controller="Authentication" asp-action="Logout">
+                                                    <!-- <i class="fas fa-sign-out-alt"></i> -->
+                                                    <span> Çıkış Yap</span>
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
                         }
                         else
                         {
-                            <form class="form-group ml-2" method="post">
-                                <button class="btn btn-primary text-light" type="submit" asp-controller="Authentication" asp-action="Logout">
-                                    <i class="fas fa-sign-out-alt"></i>
-                                    <span> Çıkış Yap</span>
-                                </button>
-                            </form>
+                            <li class="nav-item">
+                                <a class="btn btn-success text-light" asp-area="" asp-controller="Authentication" asp-action="Index">
+                                    <i class="fas fa-sign-in-alt"></i>
+                                    <span> Giriş Yap </span>
+                                </a>
+                            </li>
                         }
 
-                    </li>
-                </ul>
+                        <!-- Sepet -->
+                        <li class="nav-item mx-2">
+                            <div class="header-cart">
+                                <a class="mini-cart-link js-mini-cart-link" asp-area="" asp-controller="Home" asp-action="Index">
+                                    <div class="icon mini-cart-icon float-left">
+                                        <input type="hidden" id="miniCartStore" name="miniCartStore" value="" />
+                                        <span class="icon-top-mini-cart"></span>
+                                        <span class="button__badge text-center header-span">0</span>
+                                    </div>
+                                    <div class="d-none d-lg-flex mini-cart-price float-left">
+                                        <div>
+                                            <div class="">
+                                                <span class="my-cart-text d-none d-lg-block header-span">Sepetim</span>
+                                            </div>
+                                            <div class="">
+                                                <span class="d-none d-lg-block header-span">0,00 TL</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <i class="icon icon-cart-arrow-down hidden-xs hidden-sm d-none d-lg-flex float-left"></i>
+                                </a>
+                                <div class="csa-mini-cart-container"></div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Kategoriler  -->
+    <div class="d-none d-md-block  categories-container container-fluid box-shadow mt-0 mb-5">
+        <div class="categories container d-flex justify-content-around">
+            <div class="btn">
+                <i class="fas fa-laptop"></i> <a>Bilgisayar</a>
+            </div>
+            <div class="btn">
+                <i class="fas fa-mobile-alt"></i>
+                <a>Telefon</a>
+            </div>
+            <div class="btn">
+                <i class="fas fa-tablet-alt"></i>
+                <a>Tablet</a>
+            </div>
+            <div class="btn">
+                <i class="fas fa-tv"></i>
+                <a>Televizyon</a>
+            </div>
+            <div class="btn">
+                <i class="fas fa-camera"></i>
+                <a>Foto & Kamera</a>
+            </div>
+            <div class="btn">
+                <i class="fas fa-gamepad"></i>
+                <a>Oyun Konsolları</a>
+            </div>
+            <div class="btn">
+                <i class="fas fa-puzzle-piece"></i>
+                <a>Hobi, Eğlence</a>
             </div>
         </div>
-    </nav>
-</header>
-<div class="container">
-    <main role="main" class="pb-3">
-        @RenderBody()
-    </main>
-</div>
 
-<footer class="border-top footer text-muted">
-    <div class="container">
-        &copy; 2020 - TechStore - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
     </div>
-</footer>
-<script src="~/lib/jquery/dist/jquery.min.js"></script>
-<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-<script src="~/js/site.js" asp-append-version="true"></script>
-<script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
-<script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
-@await RenderSectionAsync("Scripts", required: false)
+
+<!-- Body -->
+    <div class="container-fluid pb-5 mb-4">
+        <main role="main">
+            @RenderBody()
+        </main>
+    </div>
+
+    <footer class="container border-top footer text-muted fixed-bottom mt-4 text-center">
+        <!--
+        <div>
+            <a asp-area="" asp-controller="Home" asp-action="Privacy">Gizlilik Politikası</a>
+            <a asp-area="" asp-controller="Home" asp-action="Privacy">Site Haritası</a>
+            <a asp-area="" asp-controller="Home" asp-action="Privacy">SSS</a>
+        </div>
+        -->
+        <div>
+            © Copyright 2020 TechStore - All Rights Reserved
+        </div>
+    </footer>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+    @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
+
+<style scoped>
+    .btn {
+        cursor: pointer;
+    }
+
+    .categories-container {
+        background: #2946D4;
+        padding-top: 6px;
+        padding-bottom: 6px;
+    }
+
+    .categories {
+        background: #2946D4;
+    }
+
+        .categories a {
+            color: #fbf9fa !important;
+            font-family: 'Roboto', sans-serif;
+            font-weight: 800;
+        }
+
+        .categories i {
+            color: #fbf9fa;
+            opacity: .75;
+        }
+
+        .categories div {
+            padding-top: 12px;
+            padding-bottom: 12px;
+        }
+
+            .categories div:hover {
+                background: #23316F;
+            }
+
+
+    .icon-top-mini-cart {
+        background: url("https://reimg-carrefour.mncdn.com/staticimage/icons-sprite-4.svg?v=1.0") -62px -27px;
+        width: 30px;
+        height: 29px;
+        margin: 4px 0 0 5px;
+        float: left;
+    }
+
+    .mini-cart-link {
+        float: right !important;
+        display: block;
+        line-height: 34px;
+        color: #303030;
+        white-space: nowrap;
+        position: relative;
+    }
+
+    .mini-cart-price {
+        padding: 0 1em;
+        display: block;
+        float: left;
+        font-size: 16px;
+    }
+
+        .mini-cart-price span {
+            display: block;
+            line-height: 18px;
+            color: #005baa;
+            font-size: 14px;
+            font-family: "Nunito", Helvetica, Arial, sans-serif;
+            font-weight: 800;
+        }
+
+    .icon-cart-arrow-down {
+        background: url("https://reimg-carrefour.mncdn.com/staticimage/icons-sprite-4.svg?v=1.0") -532px -3px;
+        width: 15px;
+        height: 12px;
+        display: inline-block;
+        margin: 0;
+    }
+
+    .header-span {
+        line-height: 33px;
+        margin-left: 10px;
+        font-size: 14px;
+        color: #005baa;
+        font-weight: 800;
+    }
+
+    .my-cart-text {
+        font-size: 14px;
+        font-weight: 600 !important;
+    }
+
+    .csa-mini-cart-container {
+        top: 100% !important;
+        margin-top: 20px;
+        background: #ffffff;
+        border-radius: 4px;
+        position: absolute;
+        right: 0;
+        z-index: 10000;
+        border: 1px solid #ddd;
+    }
+
+    .header-cart .mini-cart-link .mini-cart-icon {
+        width: auto;
+    }
+
+        .header-cart .mini-cart-link .mini-cart-icon .button__badge {
+            top: 0;
+            left: 14px;
+            border-radius: 50%;
+            width: 17px;
+            height: 17px;
+            line-height: 17px;
+            font-size: 11px;
+            padding: 1px 0;
+            margin-top: -3px;
+            margin-left: 5px;
+            position: absolute;
+            color: white;
+            background-color: #ff0000;
+            float: left;
+        }
+</style>
+
+@section Scripts{
+    
+    <script type="text/javascript">
+       
+    </script>
+}

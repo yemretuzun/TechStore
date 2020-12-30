@@ -17,45 +17,51 @@
         <hr />
 
         <div class="card mt-2">
-            <div class="card-header">
+            <div class="card-header  bg-dark">
                 <h3>Database Yönetimi</h3>
             </div>
             <div class="card-body">
-                <div class="btn-group-lg btn-group-sm">
-                    <a class="btn btn-primary" asp-controller="AdminPanel" asp-action="Products">
+                <div class="btn-group-lg btn-group-sm d-flex justify-content-between">
+                    <a class="btn btn-db" asp-controller="Products" asp-action="index">
                         <i class="fas fa-database"></i>
                         <span>Products</span>
                     </a>
-                    <a class="btn btn-primary" asp-controller="AdminPanel" asp-action="Users">
+                    <a class="btn btn-db" asp-controller="AdminPanel" asp-action="Users">
                         <i class="fas fa-database"></i>
                         <span>Users</span>
                     </a>
-                    <a class="btn btn-primary" asp-controller="AdminPanel" asp-action="Roles">
-                        <i class="fas fa-database"></i>
-                        <span>Roles</span>
-                    </a>
-                    <a class="btn btn-primary" asp-controller="AdminPanel" asp-action="Permissions">
-                        <i class="fas fa-database"></i>
-                        <span>Permissions</span>
-                    </a>
-                    <a class="btn btn-primary" asp-controller="AdminPanel" asp-action="Credentials">
-                        <i class="fas fa-database"></i>
-                        <span>Credentials</span>
-                    </a>
-                    <a class="btn btn-primary" asp-controller="AdminPanel" asp-action="CredentialTypes">
-                        <i class="fas fa-database"></i>
-                        <span>CredentialTypes</span>
-                    </a>
-                    <a class="btn btn-primary" asp-controller="AdminPanel" asp-action="CredentialTypes">
+                    <a class="btn btn-db" asp-controller="AdminPanel" asp-action="brands">
                         <i class="fas fa-database"></i>
                         <span>Brands</span>
                     </a>
+                    <a class="btn btn-db" asp-controller="AdminPanel" asp-action="Roles">
+                        <i class="fas fa-database"></i>
+                        <span>Roles</span>
+                    </a>
+                    <a class="btn btn-db" asp-controller="AdminPanel" asp-action="Permissions">
+                        <i class="fas fa-database"></i>
+                        <span>Permissions</span>
+                    </a>
+                    <a class="btn btn-db" asp-controller="AdminPanel" asp-action="Credentials">
+                        <i class="fas fa-database"></i>
+                        <span>Credentials</span>
+                    </a>
+                    <a class="btn btn-db" asp-controller="AdminPanel" asp-action="CredentialTypes">
+                        <i class="fas fa-database"></i>
+                        <span>CredentialTypes</span>
+                    </a>
+                    <a class="btn btn-db" asp-controller="Categories" asp-action="Index">
+                        <i class="fas fa-database"></i>
+                        <span>Categories</span>
+                    </a>
+
+                   
 
                 </div>
             </div>
         </div>
         <div class="card mt-2">
-            <div class="card-header">
+            <div class="card-header bg-dark">
                 <h3>Site istatistikleri</h3><span>Yapılabilir ama acelesi/gerek yok</span>
             </div>
             <div class="card-body">
@@ -70,3 +76,38 @@
     </div>
 </div>
 
+<style scoped>
+
+    .btn-db {
+        background: darkslateblue;
+    }
+
+    .btn-db i {
+        color: gold;
+    }
+
+    .btn-db span {
+        color: azure;
+    }
+
+    body {
+        background: ghostwhite;
+    }
+
+
+    .card-header {
+        color: ghostwhite;
+        cursor: pointer;
+    }
+
+    .card-body {
+        background: ghostwhite;
+        color: #010101;
+    }
+</style>
+
+@section Scripts
+{
+    <script type="text/javascript">
+    </script>
+}

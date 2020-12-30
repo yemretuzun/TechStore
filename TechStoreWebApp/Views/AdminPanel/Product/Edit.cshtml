@@ -1,0 +1,309 @@
+﻿@using System.Security.Claims
+@using MongoDB.Bson
+@model SharedModels.Product
+
+@{
+    var vm = new TechStoreWebApp.Models.ViewModels.Admin.ProductsViewModel();
+    var categorySpecs = @Model?.TechnicalSpecs;
+    ViewData["Title"] = "Ürün düzenle";
+    Layout = "_Layout";
+}
+
+@if (!@User.HasClaim(ClaimTypes.Role, "Administrator"))
+{
+    <h1>403 Forbidden!</h1>
+    <h4 class="alert alert-danger">Bu alana erişim yetkiniz yok!</h4>
+    return;
+}
+
+<!-- Düzenlenecek product null gelirse işlemi iptal et -->
+@if (@Model == null)
+{
+    <h4 class="alert alert-danger">Error: Model is null!</h4>
+    return;
+}
+
+<div class="container">
+    <form method="post" asp-controller="Products" asp-action="edit">
+        <input class="form-control" type="hidden" value="@Model.Id" id="Id" name="Id" />
+
+        <div class="form-group card">
+            <label class="card-header">
+                Görseller
+                <span class="btn py-1 ml-2 bg-green-500 text-green-100 hover:text-green-600  hover:bg-green-200"
+                      onclick="addImage()">+</span>
+            </label>
+            <div class="card-body">
+                <div class="card-img flex flex-row overflow-x-auto overflow-y-hidden">
+                    <div class="d-inline-block flex-shrink-0" style="max-height: 250px;">
+                        @if (@Model.Images != null)
+                        {
+                            var imgCounter = 0;
+                            foreach (var imageSrc in @Model.Images)
+                            {
+                                var _id = "img_";
+                                {
+                                    _id += imgCounter;
+                                }
+                                <div id="@_id" class="d-inline-block  flex-shrink-0 m-1.5 hover:bg-gray-200">
+                                    <div>
+                                        <span class="btn text-red-600 bg-gray-100 hover:bg-red-600 hover:text-white"
+                                              onclick="deleteImage('@_id', '@imageSrc')">
+                                            X
+                                        </span>
+                                        <img src="@imageSrc" style="max-height: 220px" alt="">
+                                    </div>
+                                    <input type="hidden" name="images[]" value="@imageSrc" />
+                                </div>
+
+                                imgCounter++;
+                            }
+                        }
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="">
+
+            <div class="form-group">
+                <label>Title</label>
+                <input class="form-control" type="text" value="@Model.Title" id="Title" name="Title" />
+            </div>
+            <div class="form-group">
+                <label>Description</label>
+                <input class="form-control" type="hidden" value="@Model.Description" id="Description" name="Description" />
+                <div data-editor="ClassicEditor" data-collaboration="false" class="editor"></div>
+            </div>
+            <div class="form-group">
+                <label>Stock</label>
+                <input class="form-control" type="text" value="@Model.Stock" id="Stock" name="Stock" />
+            </div>
+            <div class="form-group">
+                <label>Price</label>
+                <input class="form-control" type="text" value="@Model.Price" id="Price" name="Price" />
+            </div>
+            <div class="form-group">
+                <label>Tax</label>
+                <input class="form-control" type="text" value="@Model.Tax" id="Tax" name="Tax" />
+            </div>
+            <div class="form-group">
+                <label>Discount</label>
+                <input class="form-control" type="text" value="@Model.Discount" id="Discount" name="Discount" />
+            </div>
+
+            <div class="form-group">
+                <label>Ratings</label>
+                <input class="form-control" type="text" value="@Model.Ratings" id="Ratings" name="Ratings" />
+            </div>
+            <div class="form-group">
+                <label>Renk</label>
+                <input class="form-control" type="text" value="@Model.Color" id="Color" name="Color" />
+            </div>
+            <div class="form-group">
+                <label>Warranty</label>
+                <input class="form-control" type="text" value="@Model.Warranty" id="Warranty" name="Warranty" />
+            </div>
+            <div class="form-group">
+                <label>Marka:</label>
+                @Html.DropDownList("BrandId", @vm.Brands,
+                    "Marka seç",
+                    new
+                    {
+                        @class = "form-control",
+                        @name = "BrandId",
+                        @id = "BrandId",
+                    })
+            </div>
+            <div class="form-group">
+                <label>Kategori:</label>
+                <input readonly class="form-control" type="text" value="@Model.CategoryId" id="CategoryId" name="CategoryId" />
+                <input readonly class="form-control" type="text" value="@vm.ProductCategory(@Model.CategoryId).Name" />
+            </div>
+            <div class="form-group">
+                <table class="table table-secondary  table-striped border">
+                    <thead class="bg-dark text-light">
+                    <th>Özellik</th>
+                    <th>Değer</th>
+                    </thead>
+                    <tbody>
+                        @if (categorySpecs != null)
+                        {
+                            @for (var i = 0; i < categorySpecs.Count; i++)
+                            {
+                                <tr>
+                                    <td>
+                                        <input id="spec_name_@i" readonly class="form-control" type="text"
+                                               name="specKeys[]"
+                                               value="@categorySpecs.ElementAtOrDefault(i)?.Name" />
+                                    </td>
+                                    <td>
+                                        <input id="spec_input_@i" class="form-control" type="text"
+                                               name="specValues[]"
+                                               value="@categorySpecs.ElementAt(i).Value" />
+                                    </td>
+                                </tr>
+                            }
+
+                        }
+                    </tbody>
+                </table>
+                <input id="specs" type="hidden" name="specs" />
+            </div>
+        </div>
+
+        <div class="form-group">
+            <button class="btn btn-warning"><i class="fas fa-check text-black-50"></i>  KAYDET </button>
+        </div>
+    </form>
+
+    <div class="mt-3">
+        <a asp-action="index" asp-controller="Products"><i class="fas fa-angle-double-left"></i> Products tablosuna dön</a>
+    </div>
+
+</div>
+
+@section Scripts
+{
+    @* lity *@
+    <script src="~/lib/lity/lity.min.js"></script>
+    <link rel="stylesheet" href="~/lib/lity/lity.min.css"/>
+    @* CKEditor 5 *@
+    <script src="~/lib/ckeditor5/build/ckeditor.js"></script>
+
+    @*<script src="https://cdn.ckeditor.com/ckeditor5/24.0.0/classic/ckeditor.js"></script>*@
+    @* form serialize *@
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-serialize-object/2.5.0/jquery.serialize-object.min.js" integrity="sha512-Gn0tSSjkIGAkaZQWjx3Ctl/0dVJuTmjW/f9QyB302kFjU4uTNP4HtA32U2qXs/TRlEsK5CoEqMEMs7LnzLOBsA==" crossorigin="anonymous"></script>
+
+    <script type="text/javascript">
+
+        let editor;
+        ClassicEditor
+            .create( document.querySelector( '.editor' ), {
+                toolbar: {
+                    items: [
+                        'heading',
+                        '|',
+                        'fontFamily',
+                        'fontSize',
+                        'fontColor',
+                        'fontBackgroundColor',
+                        '|',
+                        'bold',
+                        'italic',
+                        'underline',
+                        'removeFormat',
+                        'highlight',
+                        'bulletedList',
+                        'numberedList',
+                        '|',
+                        'alignment',
+                        'indent',
+                        'outdent',
+                        '|',
+                        'imageInsert',
+                        'imageUpload',
+                        'link',
+                        'specialCharacters',
+                        'blockQuote',
+                        'insertTable',
+                        'mediaEmbed',
+                        'code',
+                        '|',
+                        'undo',
+                        'redo',
+                        '|',
+                        'exportWord',
+                        'exportPdf'
+                    ]
+                },
+                language: 'en',
+                image: {
+                    toolbar: [
+                        'imageTextAlternative',
+                        'imageStyle:full',
+                        'imageStyle:side',
+                        'linkImage'
+                    ]
+                },
+                table: {
+                    contentToolbar: [
+                        'tableColumn',
+                        'tableRow',
+                        'mergeTableCells',
+                        'tableCellProperties',
+                        'tableProperties'
+                    ]
+                },
+                licenseKey: '',
+				
+            })
+            .then(newEditor => {
+                let editorContent = "<p></p>";
+                if ($('#Description').val())
+                    editorContent = $('#Description').val();
+
+                newEditor.setData(editorContent);
+                window.editor = editor;
+                editor = newEditor;
+            } )
+            .catch( error => {
+                console.error( 'Oops, something went wrong!' );
+                console.error( 'Please, report the following error on https://github.com/ckeditor/ckeditor5/issues with the build id and the error stack trace:' );
+                console.warn( 'Build id: qkhg3imhoftk-pcvizm55blvq' );
+                console.error( error );
+            } );
+
+        $(document).ready(function() {
+
+        });
+
+
+        function addImage() {
+            swal({
+                    title: "URL",
+                    text: "Eklenecek ürün görseli için geçerli bir url giriniz.",
+                    content: "input"
+                })
+                .then((value) => {
+                    if (value) {
+                        try { // url geçerli ise yeni görseli ekle
+                            const imgUrl = new URL(value);
+
+                            const id = _.uniqueId('img_');
+                            $('.card-img').append(
+                                `<div id="${id}" class="d-inline-block  flex-shrink-0 m-1.5 hover:bg-gray-200">
+                                    <div>
+                                        <span class="btn text-red-600 bg-gray-100 hover:bg-red-600 hover:text-white"
+                                              onclick="deleteImage('${id}','${imgUrl}')">
+                                            X
+                                        </span>
+                                        <img src="${imgUrl}" style="max-height: 220px" alt="">
+                                    </div>
+                                        <input type="hidden" name="images[]" value="${imgUrl}" />
+                                </div>`);
+                        }
+                        catch (err) { // geçersiz url
+                            swal("Hata!", err.message, "error");
+                        }
+                    }
+                });
+        }
+
+        function deleteImage(divId, imgSrc) {
+            $('#' + divId).remove();
+        }
+
+
+        // form tamamlanmadan önce konrol et
+        $('form').submit(() => {
+
+            $("#Description").val(editor.getData());
+
+            return true;
+        });
+
+
+    </script>
+
+}

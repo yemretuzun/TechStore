@@ -9,7 +9,7 @@ namespace TechStoreWebApp.Services
 {
     public class PermissionService : BaseService<Permission>
     {
-        public PermissionService() : base(@"http://localhost:8235/api/Permissions/")
+        public PermissionService() : base(@"/api/Permissions/")
         {
             
         }

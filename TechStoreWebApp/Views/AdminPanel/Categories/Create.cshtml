@@ -1,0 +1,106 @@
+﻿@using System.Security.Claims
+@model TechStoreWebApp.Controllers.Admin.CategoryInput
+
+@{
+    var vm = new TechStoreWebApp.Models.ViewModels.Admin.ProductsViewModel();
+    ViewData["Title"] = "Yeni kategori ekle";
+    Layout = "_Layout";
+}
+
+@if (!@User.HasClaim(ClaimTypes.Role, "Administrator"))
+{
+    <h1>403 Forbidden!</h1>
+    <h4 class="alert alert-danger">Bu alana erişim yetkiniz yok!</h4>
+    return;
+}
+
+<div class="container">
+    <h4>Yeni kategori oluştur</h4>
+    <hr />
+    <div class="row">
+        <div class="col-md-4">
+            <form id="addCategoryForm" class="form-group" asp-controller="Categories" asp-action="create" method="post">
+                <div>
+                    <div class="form-group">
+                        <label for="Name">Name:</label>
+                        <input class="form-control" type="text" name="Name" id="Name" placeholder="Kategori adı" />
+                    </div>
+                    <div class="form-group">
+                        <label for="Image">Kategori Görseli:</label>
+                        <input class="form-control" type="text" name="Image" id="Image" placeholder="url" />
+                    </div>
+                    <div id="specInputs" class="form-group">
+                        <label>Teknik Özellikler:</label><span class="btn btn-outline-success spanBtn ml-2 h-50" onclick="addSpec()">+</span>
+                       
+                    </div>
+                    <input id="specStr" name="specStr" type="hidden"/>
+
+                    <div class="form-group mt-3">
+                        <button type="submit" class="btn btn-primary form-control">Kaydet</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div>
+        <a asp-action="Index"><i class="fas fa-angle-double-left"></i> Kategoriler tablosuna dön</a>
+    </div>
+</div>
+
+<style>
+    .spanBtn {
+        cursor: pointer;
+        border-radius: 50%;
+    }
+</style>
+
+@section Scripts
+{
+    <script type="text/javascript">
+        let specDict;
+        let i;
+
+        $(document).ready(function() {
+            specDict = {};
+            i = 0;
+
+        });
+
+        function addSpec() {
+            const specId = "spec_" + i;
+            specDict[specId] = "";
+            specStr.value = (JSON.stringify(specDict));
+
+
+            $('#specInputs').append(
+                '<div id="' +
+                specId +
+                '" class="row my-2 ml-2"> ' +
+                '<input class="form-control w-75" placeholder="yeni özellik" oninput="specInputChanged(this)">' +
+                '<span class="btn btn-outline-danger spanBtn ml-2" onclick="removeSpec(this)"> X </span></input>' +
+                '</div>'
+            );
+
+            i++;
+        }
+
+        function removeSpec(el) {
+            delete specDict[$(el).parent().attr('id')];
+            $(el).parent().remove();
+
+            specStr.value = (JSON.stringify(specDict));
+
+        }
+
+        function specInputChanged(el) {
+            specDict[$(el).parent().attr('id')] = el.value;
+
+            specStr.value = (JSON.stringify(specDict));
+        }
+
+    </script>
+
+}
+
+

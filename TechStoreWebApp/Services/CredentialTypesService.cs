@@ -8,7 +8,7 @@ namespace TechStoreWebApp.Services
 {
     public class CredentialTypesService : BaseService<SharedModels.CredentialType>
     {
-        public CredentialTypesService() : base(@"http://localhost:8235/api/CredentialTypes/")
+        public CredentialTypesService() : base(@"/api/CredentialTypes/")
         {
            
 

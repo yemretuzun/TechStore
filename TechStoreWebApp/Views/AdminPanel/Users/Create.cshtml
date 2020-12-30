@@ -1,0 +1,61 @@
+﻿@using System.Security.Claims
+@model TechStoreWebApp.Models.ViewModels.Admin.ProductsViewModel
+
+@{
+    ViewData["Title"] = "Yeni ürün";
+    Layout = "_Layout";
+}
+
+@if (!@User.HasClaim(ClaimTypes.Role, "Administrator"))
+{
+    <h1>403 Forbidden!</h1>
+    <h4 class="alert alert-danger">Bu alana erişim yetkiniz yok!</h4>
+    return;
+}
+
+<div class="container">
+    <h4>Yeni kullanıcı oluştur</h4>
+    <hr />
+    <div class="row">
+        <div class="col-md-4">
+            <form class="form-group" asp-controller="AdminPanel" asp-action="users/create" method="post">
+                <div>
+                    <div class="form-group">
+                        <label for="Email">Email:</label>
+                        <input class="form-control" type="text" name="Email" id="Email" placeholder="Email.." />
+                    </div>
+                    <div class="form-group">
+                        <label for="Password">Password:</label>
+                        <input class="form-control" type="text" name="Password" id="Password" placeholder="Password.." />
+                    </div>
+                    <div class="form-group">
+                        <label for="FirstName">FirstName:</label>
+                        <input class="form-control" type="text" name="FirstName" id="FirstName" placeholder="FirstName.." />
+                    </div>
+                    <div class="form-group">
+                        <label for="LastName">LastName:</label>
+                        <input class="form-control" type="text" name="LastName" id="LastName" placeholder="LastName.." />
+                    </div>
+                    <div class="form-group">
+                        <label for="PhoneNumber">PhoneNumber:</label>
+                        <input class="form-control" type="text" name="PhoneNumber" id="PhoneNumber" placeholder="PhoneNumber.." />
+                    </div>
+                    <div class="form-group">
+                        <label for="Tc">TC:</label>
+                        <input class="form-control" type="text" name="Tc" id="Tc" placeholder="Tc.." />
+                    </div>
+
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-primary form-control">Kaydet</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div>
+        <a asp-action="Users">Users tablosuna dön</a>
+    </div>
+</div>
+
+

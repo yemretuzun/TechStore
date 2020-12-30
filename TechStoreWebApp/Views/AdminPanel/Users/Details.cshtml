@@ -1,0 +1,40 @@
+﻿@using System.Security.Claims
+@model SharedModels.User
+
+@{
+    ViewData["Title"] = "Kullanıcı detayı";
+    Layout = "_Layout";
+}
+
+@if (!@User.HasClaim(ClaimTypes.Role, "Administrator"))
+{
+    <h1>403 Forbidden!</h1>
+    <h4 class="alert alert-danger">Bu alana erişim yetkiniz yok!</h4>
+    return;
+}
+
+@if (@Model == null)
+{
+    <div class="container alert alert-danger">Kullanıcı bulunamadı. </div>
+    return;
+}
+<div class="container">
+    <table class="table table-responsive-lg table-striped table-dark shadow-lg">
+        <tbody>
+            <tr><td>User Id</td><td>@Model.Id</td></tr>
+            <tr><td>FirstName</td><td>@Model.FirstName</td></tr>
+            <tr><td>LastName</td><td>@Model.LastName</td></tr>
+            <tr><td>Email</td><td>@Model.Email</td></tr>
+            <tr><td>PhoneNumber</td> <td>@Model.PhoneNumber</td></tr>
+            <tr><td>Tc Kimlik Numarası</td><td>@Model.Tc</td></tr>
+            <tr><td>CreateTime</td><td>@Model.CreateTime</td></tr>
+        </tbody>
+    </table>
+</div>
+
+<style scoped>
+   
+    tr td:first-child {
+        font-weight: bold;
+    }
+</style>

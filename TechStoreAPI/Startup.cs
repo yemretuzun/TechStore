@@ -51,6 +51,7 @@ namespace TechStoreAPI
             services.AddSingleton<CredentialsService>();
             services.AddSingleton<CredentialTypesService>();
             services.AddSingleton<BrandService>();
+            services.AddSingleton<CategoryService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

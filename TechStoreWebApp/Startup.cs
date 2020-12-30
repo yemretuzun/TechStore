@@ -34,7 +34,7 @@ namespace TechStoreWebApp
                         options.ExpireTimeSpan = TimeSpan.FromDays(3);
                     }
                 );
-
+            services.AddAuthorization();
             services.AddScoped<IUserManager, UserManager>();
             services.AddControllersWithViews();
             services.AddRazorPages();

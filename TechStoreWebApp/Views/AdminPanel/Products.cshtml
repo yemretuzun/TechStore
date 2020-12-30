@@ -5,7 +5,6 @@
 @{
     ViewBag.Title = "Products";
     Layout = "_Layout";
-
 }
 
 @* Admin değilse bu sayfayı göremez *@
@@ -44,7 +43,8 @@
                 <th onclick="sort(3)"><i class="fas fa-sort"></i> ProductId</th>
                 <th onclick="sort(4)"><i class="fas fa-sort"></i> Title</th>
                 <th onclick="sort(5)"><i class="fas fa-sort"></i> Fiyat</th>
-                <th onclick="sort(6)"><i class="fas fa-sort"></i> Stok</th>
+                <th onclick="sort(6)"><i class="fas fa-sort"></i> Marka</th>
+                <th onclick="sort(7)"><i class="fas fa-sort"></i> Stok</th>
                 <th>İşlemler</th>
             </tr>
         </thead>
@@ -55,42 +55,48 @@
                 @foreach (var product in @Model.Products)
                 {
 
-                    <tr class="item">
-                        <td>@i</td>
-                        <td>
-                            @if (!@product.Images.Any() || string.IsNullOrEmpty(@product.Images.ElementAt(0)))
-                            {
-                                <i class="fas fa-image mr-1 text-light ml-1" style="font-size: 36px"></i>
-                            }
-                            else
-                            {
-                                <img class="img-fluid" src="@product.Images.ElementAt(0)" width="56" height="56" />
-                            }
-                        </td>
-                        <td>@product.Id</td>
-                        <td>@product.Title</td>
-                        <td>@product.Price <i class="fas fa-lira-sign mr-1 text-light"></i></td>
-                        <td>@product.Stock</td>
-                        <td>
-                            <div class="btn-group">
-                                <form data-toggle="tooltip" title="Düzenle">
-                                    <button class="btn btn-warning" type="submit" asp-controller="AdminPanel" asp-action="products/details/{id}" asp-route-id="@product.Id">
-                                        <i class="fas fa-edit mr-1 text-light"></i>
-                                    </button>
-                                </form>
-                                <form data-toggle="tooltip" title="Detaylar">
-                                    <button class="btn btn-secondary" type="submit" asp-controller="AdminPanel" asp-action="products/details/{id}" asp-route-id="@product.Id">
-                                        <i class="fas fa-info-circle mr-1 text-light"></i>
-                                    </button>
-                                </form>
-                                <form data-toggle="tooltip" title="Sil">
-                                    <button class="btn btn-danger" data-toggle="modal" type="submit" asp-controller="AdminPanel" asp-action="products/delete/{id}" asp-route-id="@product.Id">
-                                        <i class="fas fa-trash-alt mr-1 text-light" asp-controller="AdminPanel" asp-action="DeleteProduct" asp-route-id="@product.Id"></i>
-                                    </button>
-                                </form>
-                            </div>
-                        </td>
-                    </tr>
+            <tr class="item">
+                <td>@i</td>
+                <td>
+                    @if (!@product.Images.Any() || string.IsNullOrEmpty(@product.Images.ElementAt(0)))
+                    {
+                        <i class="fas fa-image mr-1 text-light ml-1" style="font-size: 36px"></i>
+                    }
+                    else
+                    {
+                        <img class="img-responsive" src="@product.Images.ElementAt(0)" width="56" height="56" />
+                    }
+                </td>
+                <td>@product.Id</td>
+                <td>@product.Title</td>
+                <td>@product.Price <i class="fas fa-lira-sign mr-1 text-light"></i></td>
+                <td>
+                    @if (!string.IsNullOrEmpty(@product.BrandId))
+                    {
+                        @Model.BrandService.GetById(@product.BrandId).Name
+                    }
+                </td>
+                <td>@product.Stock</td>
+                <td>
+                    <div class="btn-group">
+                        <form data-toggle="tooltip" title="Düzenle">
+                            <button class="btn btn-warning" type="submit" asp-controller="AdminPanel" asp-action="products/edit/{id}" asp-route-id="@product.Id">
+                                <i class="fas fa-edit mr-1 text-light"></i>
+                            </button>
+                        </form>
+                        <form data-toggle="tooltip" title="Detaylar">
+                            <button class="btn btn-secondary" type="submit" asp-controller="AdminPanel" asp-action="products/details/{id}" asp-route-id="@product.Id">
+                                <i class="fas fa-info-circle mr-1 text-light"></i>
+                            </button>
+                        </form>
+                        <form data-toggle="tooltip" title="Sil">
+                            <button class="btn btn-danger" data-toggle="modal" type="submit" asp-controller="AdminPanel" asp-action="products/delete/{id}" asp-route-id="@product.Id">
+                                <i class="fas fa-trash-alt mr-1 text-light" asp-controller="AdminPanel" asp-action="DeleteProduct" asp-route-id="@product.Id"></i>
+                            </button>
+                        </form>
+                    </div>
+                </td>
+            </tr>
                     i++;
                 }
             }

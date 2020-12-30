@@ -11,7 +11,7 @@ namespace TechStoreWebApp.Services
 {
     public class UserService : BaseService<User>
     {
-        public UserService(): base(@"http://localhost:8235/api/Users/")
+        public UserService(): base(@"/api/Users/")
         {
 
         }

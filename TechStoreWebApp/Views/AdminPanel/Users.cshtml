@@ -1,7 +1,9 @@
-﻿@using System.Security.Claims
+﻿@model TechStoreWebApp.Models.ViewModels.Admin.UsersViewModel
+@inject TechStoreWebApp.IUserManager UserManager
+@using System.Security.Claims
 
 @{
-    ViewBag.Title = "Users";
+    ViewBag.Title = "Kullanıcılar";
     Layout = "_Layout";
 }
 
@@ -11,4 +13,124 @@
     <h4 class="alert alert-danger">Bu alana erişim yetkiniz yok!</h4>
     return;
 }
-<h2>Users</h2>
+
+<div class="container-fluid w3-container">
+
+    <div>
+        @* DB adı *@
+        <h2 class="text-primary float-left" style="cursor: pointer"><i class="fas fa-database mr-1 text-black-50"></i> Users</h2>
+        @* Yeni ürün ekle *@
+        <form class="float-right">
+            <button class="btn btn-success mb-1" type="submit" asp-controller="AdminPanel" asp-action="users/create">
+                <i class="fas fa-plus-square mr-1 text-light"></i> Ekle
+            </button>
+        </form>
+    </div>
+
+    @* Tabloda aramaya yap *@
+    <div class="form-group">
+        <input class="form-control" id="searchInput" type="text" placeholder="Ara..">
+    </div>
+
+
+
+    @* Products tablosu *@
+    <table id="productsTable" class="table table-dark table-striped shadow">
+        <thead>
+            <tr class="sticky-top bg-dark">
+                <th onclick="sort(1)"><i class="fas fa-sort"></i> #</th>
+                <th onclick="sort(2)"></th>
+                <th onclick="sort(3)"><i class="fas fa-sort"></i> UserId</th>
+                <th onclick="sort(4)"><i class="fas fa-sort"></i> Full Name</th>
+                <th onclick="sort(5)"><i class="fas fa-sort"></i> Email</th>
+                <th onclick="sort(5)"><i class="fas fa-sort"></i> Telefon</th>
+                <th onclick="sort(5)"><i class="fas fa-sort"></i> TC Kimlik Numarası</th>
+                <th>İşlemler</th>
+            </tr>
+        </thead>
+        <tbody>
+            @{
+                var i = 1;
+
+                @foreach (var user in @Model.Users)
+                {
+
+                    <tr class="item">
+                        <td>@i</td>
+                        <td>
+                        </td>
+                        <td>@user.Id</td>
+                        <td>@user.FirstName @user.LastName</td>
+                        <td>@user.Email</td>
+                        <td>@user.PhoneNumber</td>
+                        <td>@user.Tc</td>
+
+                        <!-- işlemler  -->
+                        <td>
+                            <div class="btn-group">
+                                <form data-toggle="tooltip" title="Düzenle">
+                                    <button class="btn btn-warning" type="submit" asp-controller="AdminPanel" asp-action="users/edit/{id}" asp-route-id="@user.Id">
+                                        <i class="fas fa-edit mr-1 text-light"></i>
+                                    </button>
+                                </form>
+                                <form data-toggle="tooltip" title="Detaylar">
+                                    <button class="btn btn-secondary" type="submit" asp-controller="AdminPanel" asp-action="users/details/{id}" asp-route-id="@user.Id">
+                                        <i class="fas fa-info-circle mr-1 text-light"></i>
+                                    </button>
+                                </form>
+                                <form data-toggle="tooltip" title="Sil">
+                                    <button class="btn btn-danger" data-toggle="modal" type="submit" asp-controller="AdminPanel" asp-action="users/delete/{id}" asp-route-id="@user.Id">
+                                        <i class="fas fa-trash-alt mr-1 text-light" asp-controller="AdminPanel" asp-action="DeleteProduct" asp-route-id="@user.Id"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    i++;
+                }
+            }
+        </tbody>
+    </table>
+
+</div>
+
+<style scoped>
+    th {
+        cursor: pointer;
+    }
+
+    .fa-sort {
+        opacity: .5;
+    }
+</style>
+
+@section Scripts
+{
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+            $('[data-toggle="tooltip"]').tooltip();
+        });
+
+        $(document).ready(function () {
+            $("#searchInput").on("keyup",
+                function () {
+                    var value = $(this).val().toLowerCase();
+                    $("#productsTable tr").filter(function () {
+                        $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+                    });
+                });
+        });
+
+        function sort(data) {
+            w3.sortHTML('#productsTable', '.item', 'td:nth-child(' + data + ')');
+        }
+
+        $(function () {
+            $('button.details').on('click', function () {
+                $('.modal-body').load(`/Views/users?id=${$(this).data('id')}`);
+            });
+        })
+
+    </script>
+}

@@ -15,7 +15,7 @@ namespace TechStoreWebApp.Services
     /// </summary>
     public class RoleService : BaseService<Role>
     {
-        public RoleService() : base(@"http://localhost:8235/api/Role/")
+        public RoleService() : base(@"/api/Role/")
         {
         }
     }
