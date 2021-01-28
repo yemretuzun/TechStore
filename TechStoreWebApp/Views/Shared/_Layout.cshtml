@@ -1,5 +1,10 @@
 ﻿@inject TechStoreWebApp.IUserManager UserManager
 @using System.Security.Claims
+@{
+    var user = UserManager.GetCurrentUser(Context);
+    var cart = UserManager.GetCart(Context);
+
+}
 
 <!DOCTYPE html>
 <html lang="en">
@@ -29,6 +34,11 @@
     <link rel="stylesheet" href="~/lib/tailwindcss/components.min.css" />
     <link rel="stylesheet" href="~/lib/tailwindcss/utilities.min.css" />
 
+    <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.css">
+    <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css">
+
+    <script src="https://unpkg.com/swiper/swiper-bundle.js"></script>
+    <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
     <style>
         * {
             font-family: 'Century Gothic', sans-serif;
@@ -59,12 +69,32 @@
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between ">
-                    <ul class="navbar-nav mr-auto">
+                    <ul class="navbar-nav mr-auto self-stretch flex-fill">
+                        @*nav ANASAYFA *@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Anasayfa</a>
                         </li>
+                        @*nav PRIVACY *@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                        </li>
+                        @*nav ARAMA *@
+                        <li class="flex-fill">
+                            <form id="searchForm" asp-action="Index" asp-controller="AllProducts" method="post">
+                                <div class="w-100 row px-2 m-0 bg-white border-2 border-opacity-40 border-blue-400 rounded-xl">
+                                    <i class="fas fa-search w-10 mx-auto my-auto text-blue-400"></i>
+                                    <input id="searchInput"
+                                           name="searchInput"
+                                           class="p-2 my-auto rounded-lg col border-0 placeholder-blue-400"
+                                           type="search" placeholder="Ürün ara..." />
+                                    @Html.ActionLink("ARA", "Index", "AllProducts",
+                                            new { search = "" },
+                                            new {
+                                                     @class = "btn active:shadow-none focus:shadow-none text-blue-400 hover:text-blue-600",
+                                                    style = "font-family:Roboto"
+                                            })
+                                </div>
+                            </form>
                         </li>
                     </ul>
                     <ul class="navbar-nav">
@@ -132,7 +162,7 @@
                         }
                         else
                         {
-                            <li class="nav-item">
+                            <li class="nav-item mx-2">
                                 <a class="btn btn-success text-light" asp-area="" asp-controller="Authentication" asp-action="Index">
                                     <i class="fas fa-sign-in-alt"></i>
                                     <span> Giriş Yap </span>
@@ -142,20 +172,42 @@
 
                         <!-- Sepet -->
                         <li class="nav-item mx-2">
-                            <div class="header-cart">
-                                <a class="mini-cart-link js-mini-cart-link" asp-area="" asp-controller="Home" asp-action="Index">
+                            <div class="header-cart align-self-mi">
+                                @{ var controllerName = "";
+                                }
+                                @if (User.Identity.IsAuthenticated)
+                                {
+                                    controllerName = "Cart";
+                                }
+                                else
+                                {
+                                    controllerName = "Authentication";
+                                }
+                                <a class="mini-cart-link js-mini-cart-link" asp-area=""
+                                   asp-controller="@controllerName"
+                                   asp-action="Index">
                                     <div class="icon mini-cart-icon float-left">
                                         <input type="hidden" id="miniCartStore" name="miniCartStore" value="" />
                                         <span class="icon-top-mini-cart"></span>
-                                        <span class="button__badge text-center header-span">0</span>
+                                        <!-- sepetteki ürün sayısı -->
+                                        <span class="button__badge text-center header-span">
+                                            @if (@UserManager.GetCurrentUser(Context) != null && cart != null)
+                                            {
+                                                <span>@UserManager.GetCart(Context).Items.Sum(x => x.Quantity)</span>
+                                            }
+                                            else
+                                            {
+                                                <span>0</span>
+                                            }
+                                        </span>
                                     </div>
                                     <div class="d-none d-lg-flex mini-cart-price float-left">
                                         <div>
                                             <div class="">
-                                                <span class="my-cart-text d-none d-lg-block header-span">Sepetim</span>
+                                                <span class="my-cart-text d-none d-lg-block header-span">Alışveriş</span>
                                             </div>
                                             <div class="">
-                                                <span class="d-none d-lg-block header-span">0,00 TL</span>
+                                                <span class="d-none d-lg-block header-span">Sepetim</span>
                                             </div>
                                         </div>
                                     </div>
@@ -173,12 +225,14 @@
     <!-- Kategoriler  -->
     <div class="d-none d-md-block  categories-container container-fluid box-shadow mt-0 mb-5">
         <div class="categories container d-flex justify-content-around">
-            <div class="btn">
+            <div class="btn position-relative">
                 <i class="fas fa-laptop"></i> <a>Bilgisayar</a>
+                <a asp-action="Index" asp-controller="AllProducts" asp-route-categoryId="5fda7fde227fc7339e9f2c93" class="stretched-link"></a>
             </div>
-            <div class="btn">
+            <div class="btn position-relative">
                 <i class="fas fa-mobile-alt"></i>
                 <a>Telefon</a>
+                <a asp-action="Index" asp-controller="AllProducts" asp-route-categoryId="5fda8268227fc7339e9f2c94" class="stretched-link"></a>
             </div>
             <div class="btn">
                 <i class="fas fa-tablet-alt"></i>
@@ -204,14 +258,14 @@
 
     </div>
 
-<!-- Body -->
-    <div class="container-fluid pb-5 mb-4">
+    <!-- Body -->
+    <div class="container-fluid pb-5 mb-14">
         <main role="main">
             @RenderBody()
         </main>
     </div>
 
-    <footer class="container border-top footer text-muted fixed-bottom mt-4 text-center">
+    <footer class="container-fluid footer fixed-bottom mt-4 py-1 px-3 border-top text-muted fixed-bottom text-center">
         <!--
         <div>
             <a asp-area="" asp-controller="Home" asp-action="Privacy">Gizlilik Politikası</a>
@@ -223,6 +277,7 @@
             © Copyright 2020 TechStore - All Rights Reserved
         </div>
     </footer>
+
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
@@ -232,9 +287,33 @@
 </body>
 </html>
 
-<style scoped>
+<style>
     .btn {
         cursor: pointer;
+    }
+
+    .text-truncate-1 {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: -webkit-box;
+        -webkit-line-clamp: 1; /* number of lines to show */
+        -webkit-box-orient: vertical;
+    }
+
+    .text-truncate-2 {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: -webkit-box;
+        -webkit-line-clamp: 2; /* number of lines to show */
+        -webkit-box-orient: vertical;
+    }
+
+    .text-truncate-3 {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: -webkit-box;
+        -webkit-line-clamp: 3; /* number of lines to show */
+        -webkit-box-orient: vertical;
     }
 
     .categories-container {
@@ -356,8 +435,12 @@
 </style>
 
 @section Scripts{
-    
+
+    @* form serialize *@
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-serialize-object/2.5.0/jquery.serialize-object.min.js" integrity="sha512-Gn0tSSjkIGAkaZQWjx3Ctl/0dVJuTmjW/f9QyB302kFjU4uTNP4HtA32U2qXs/TRlEsK5CoEqMEMs7LnzLOBsA==" crossorigin="anonymous"></script>
+
     <script type="text/javascript">
+
        
     </script>
 }

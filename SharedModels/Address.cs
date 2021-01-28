@@ -29,7 +29,6 @@ namespace SharedModels
         /// <summary>
         /// Mahalle, Köy, Semt
         /// </summary>
-        [BsonRequired]
         public string District { get; set; }
 
         /// <summary>

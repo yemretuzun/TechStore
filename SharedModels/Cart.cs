@@ -7,43 +7,36 @@ namespace SharedModels
     /// <summary>
     /// Sepet.
     /// </summary>
-    public class Cart
+    public class Cart : BaseModel
     {
         /// <summary>
-        /// Sepet ID'si.
+        /// Sepetin hangi kullanıcıya ait olduğunu gösterir.
         /// </summary>
-        [BsonId]
-        [BsonRequired]
-        public string Id { get; set; }
+        public string UserId { get; set; }
 
         /// <summary>
         /// Sepetteki ürünler.
         /// </summary>
-        [BsonRequired]
         public IEnumerable<CartItem> Items { get; set; }
 
         /// <summary>
         /// KDV hariç tutar.
         /// </summary>
-        [BsonRequired]
         public float SubTotal { get; set; }
 
         /// <summary>
         /// Toplam KDV tutarı.
         /// </summary>
-        [BsonRequired]
         public float TotalTax { get; set; }
 
         /// <summary>
         /// Toplam indirim miktarı.
         /// </summary>
-        [BsonRequired]
         public float TotalDiscount { get; set; }
 
         /// <summary>
         /// Sepet toplam tutarı. 
         /// </summary>
-        [BsonRequired]
         public float TotalPrice { get; set; }
 
         

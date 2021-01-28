@@ -6,15 +6,8 @@ namespace SharedModels
     /// <summary>
     /// Sipariş.
     /// </summary>
-    public class Order
+    public class Order : BaseModel
     {
-        /// <summary>
-        /// Sipariş ID'si.
-        /// </summary>
-        [BsonId]
-        [BsonRequired]
-        public string Id { get; set; }
-
         /// <summary>
         /// Sipariş verilen ürünler. Sipariş detayı.
         /// </summary>

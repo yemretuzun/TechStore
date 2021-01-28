@@ -5,13 +5,6 @@ namespace SharedModels
     public class CartItem
     {
         /// <summary>
-        /// CartItem ID'si.
-        /// </summary>
-        [BsonId]
-        [BsonRequired]
-        public string Id { get; set; }
-
-        /// <summary>
         /// Ürün Id'si.
         /// </summary>
         [BsonRequired]
@@ -23,23 +16,23 @@ namespace SharedModels
         [BsonRequired]
         public uint Quantity { get; set; }
 
-        /// <summary>
-        /// Quantity * Tax
-        /// </summary>
-        [BsonRequired]
-        public float TotalTax { get; set; }
+        ///// <summary>
+        ///// Quantity * Tax
+        ///// </summary>
+        //[BsonRequired]
+        //public float TotalTax { get; set; }
 
-        /// <summary>
-        /// Quantity * Discount
-        /// </summary>
-        [BsonRequired]
-        public float TotalDiscount { get; set; }
+        ///// <summary>
+        ///// Quantity * Discount
+        ///// </summary>
+        //[BsonRequired]
+        //public float TotalDiscount { get; set; }
 
-        /// <summary>
-        /// Quantity * TotalPrice
-        /// </summary>
-        [BsonRequired]
-        public float SubTotal { get; set; }
+        ///// <summary>
+        ///// Quantity * TotalPrice
+        ///// </summary>
+        //[BsonRequired]
+        //public float SubTotal { get; set; }
 
     }
 }

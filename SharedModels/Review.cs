@@ -6,14 +6,13 @@ namespace SharedModels
     /// <summary>
     /// Ürün değerlendirmesi
     /// </summary>
-    public class Review
+    public class Review : BaseModel
     {
         /// <summary>
-        /// Yorum ID'si.
+        /// Yorumu yapan kullanıcının ID'si
         /// </summary>
-        [BsonId]
         [BsonRequired]
-        public string Id { get; set; }
+        public string UserId { get; set; }
 
         /// <summary>
         /// Değerlendirme başlığı.
@@ -32,12 +31,6 @@ namespace SharedModels
         /// </summary>
         [BsonRequired]
         public byte Rating { get; set; }
-
-        /// <summary>
-        /// Yorumu yapan kullanıcının adı. FirstName + LastName
-        /// </summary>
-        [BsonRequired]
-        public string UserName { get; set; }
 
         /// <summary>
         /// Yorumun yayınlanma tarihi.

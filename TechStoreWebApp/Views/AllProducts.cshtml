@@ -1,0 +1,257 @@
+﻿@inject TechStoreWebApp.IUserManager UserManager
+@using System.Security.Claims
+@using TechStoreWebApp.Models.ViewModels.Admin
+@using SharedModels
+
+@model ProductsViewModel
+@{
+    ViewData["Title"] = "Tüm ürünler";
+    var brands = new List<Brand>();
+    var maxPrice = Model.Products.Select(p => p.Price).Max();
+
+    if (Model.Products.Any())
+    {
+        var brandIds = Model.Products.Select(p => p.BrandId).Distinct().ToList();
+
+        foreach (var id in brandIds)
+        {
+            brands.Add(Model.BrandService.GetById(id));
+        }
+    }
+}
+
+@try
+{
+<div class="container-fluid row">
+
+    @*<div class="spinner-border position-absolute" role="status">
+        <span class="visually-hidden"></span>
+    </div>*@
+
+    @*filtreler*@
+    <div class="col-2">
+        <div class="text-xl text-gray-500" style="font-family: 'Roboto';">
+            <i class="fas fa-filter text-sm"></i> Filtreler
+        </div>
+        <div class="card my-3 max-h-10 overflow-scroll overflow-x-auto">
+            <div class="card-header bg-indigo-600 text-white sticky-top">
+                Marka
+            </div>
+            <ul class="list-group list-group-flush">
+                @foreach (var brand in brands)
+                {
+                    <li class="list-group-item"><input type="checkbox">
+                        <span> @brand.Name</span>
+                    </li>
+                }
+            </ul>
+        </div>
+        <div class="card my-3 max-h-10 overflow-scroll overflow-x-auto">
+            <div class="card-header bg-indigo-600 text-white sticky-top">
+                Fiyat
+            </div>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item"><input type="checkbox" value="0-1000">      <span> 0 TL     - 1000 TL  </span></li>
+                <li class="list-group-item"><input type="checkbox" value="1000-2000">   <span> 1000 TL  - 2000 TL  </span></li>
+                <li class="list-group-item"><input type="checkbox" value="2000-5000">   <span> 2000 TL  - 5000 TL  </span></li>
+                <li class="list-group-item"><input type="checkbox" value="5000-7500">   <span> 5000 TL  - 7500 TL  </span></li>
+                <li class="list-group-item"><input type="checkbox" value="7500-5000">   <span> 7500 TL  - 10000 TL </span></li>
+                <li class="list-group-item"><input type="checkbox" value="10000-15000"> <span> 10000 TL - 15000 TL </span></li>
+                <li class="list-group-item"><input type="checkbox" value="15000-20000"> <span> 15000 TL - 20000 TL </span></li>
+                <li class="list-group-item"><input type="checkbox" value="25000-30000"> <span> 25000 TL - 30000 TL </span></li>
+                <li class="list-group-item"><input type="checkbox" value="40000-50000"> <span> 40000 TL - 50000 TL </span></li>
+                <li class="list-group-item"><input type="checkbox" value="50000">       <span> 50000 TL ve üzeri   </span></li>
+            </ul>
+        </div>
+    </div>
+
+    @*ürünler*@
+<div class="col-10">
+    <div class="text-gray-500 row" style="font-family: 'Roboto';">
+        <span class="text-xl lg:ml-3 mr-auto">Tüm ürünler</span>
+        <div class="lg:mr-3 ml-auto ">
+            <!-- SIRALA -->
+            <div class="btn-group divide-x divide-y-0 divide-solid divide-gray-600  text-sm">
+                @{
+                    object Url(string orderBy = "Default")
+                    {
+                        return new
+                        {
+                            brandId = @Context.Request.Query["brandId"],
+                            categoryId = @Context.Request.Query["categoryId"],
+                            orderBy = orderBy,
+                        };
+                    }
+
+                    string class1() => "btn btn-secondary";
+                    string class2() => "btn btn-secondary";
+                    
+                }
+                @Html.ActionLink("Fiyat: Artan", "Index", "AllProducts", @Url("Price"), new { @class = @class1() })
+                @Html.ActionLink("Fiyat: Azalan", "Index", "AllProducts", @Url("PriceDesc"), new { @class = @class2() })
+                @Html.ActionLink("Derecelendirme", "Index", "AllProducts", @Url("Ratings"), new { @class = @class1() })
+                @Html.ActionLink("Yorum sayısı", "Index", "AllProducts", @Url("Reviews"), new { @class = @class2() })
+            </div>
+        </div>
+    </div>
+
+   
+
+    <!-- ÜRÜNLER -->
+    <div class="mt-3 grid sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 sm:gap-3 md:gap-4">
+        @if (Model.Products.Any())
+        {
+            var list = Model.Products.ToList();
+
+            @for (var i = 0; i < list.Count(); i++)
+            {
+                <div class="card max-w-md shadow-md p-5 text-center d-flex flex-column align-items-around">
+                    <div class="max-w-lg mt-auto text-center">
+                        <img class="img-responsive align-self-center mx-auto" width="120" height="120" src="@list.ElementAtOrDefault(i)?.Images.FirstOrDefault()" />
+                    </div>
+                    <div class="mt-auto text-truncate-3 ">
+                        <a asp-action="p/{productId}" asp-controller="ProductDetails" asp-route-productId="@list.ElementAtOrDefault(i)?.Id">
+                        </a>
+                        @Html.ActionLink(@list.ElementAtOrDefault(i)?.Title, "Index", "ProductDetails", new { productId = @list.ElementAtOrDefault(i)?.Id })
+                    </div>
+                    <div class="mt-auto">
+                        <select id="ratings_@i" class="ratings" data-ratings="@list.ElementAtOrDefault(i)?.Ratings">
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                        </select>
+                    </div>
+                    <div class="mt-auto">
+                        <span class="price">@list.ElementAtOrDefault(i)?.Price.ToString("0,0.00")  <i class="fas fa-lira-sign text-gray-400"></i></span>
+                    </div>
+                    <div class="mt-auto">
+                        <form id="sepeteEkleForm">
+                            <input type="hidden"
+                                   name="ProductId"
+                                   value="@list.ElementAtOrDefault(i)?.Id" />
+                            <input type="hidden"
+                                   name="Quantity"
+                                   value="1" />
+                            <input type="hidden"
+                                   name="UserId"
+                                   value="@UserManager.GetCurrentUserId(Context)" />
+                            <button type="submit"
+                                    class="btn btn-block bg-blue-600 text-white"
+                                    asp-controller="Cart"
+                                    asp-action="AddToCart">
+                                Sepete Ekle
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            }
+        }
+    </div>
+</div>
+</div>
+
+}
+catch (Exception exc)
+{
+    <div class="alert alert-danger">Hata: @exc.Message</div>
+}
+
+
+<style scoped>
+    .card {
+        min-height: 26em;
+        max-height: 26em;
+    }
+</style>
+
+@section Scripts
+{
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-bar-rating/1.2.1/themes/fontawesome-stars.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-bar-rating/1.2.1/themes/bars-reversed.min.css"/>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-bar-rating/1.2.1/jquery.barrating.min.js"></script>
+    <script type="text/javascript">
+        $(function() {
+
+            for (var i = 0; i < $('.ratings').length; i++) {
+                let id = '#ratings_' + i;
+
+                $(id).barrating({
+                    theme: 'fontawesome-stars',
+                    initialRating: $(id).attr('data-ratings'),
+                    readonly: true
+                });
+            }
+
+
+        });
+
+        ////function sirala() {
+
+        ////    //const brandId = getParameterByName('brandId')
+        ////    //const categoryId = getParameterByName('categoryId')
+        ////    //let orderBy = getParameterByName('orderBy');
+        ////    //if (!orderBy) {
+        ////    //    orderBy = $('#orderBy').val();
+        ////    //}
+            
+
+        ////    window.URL.searchParams.set('orderBy', "PriceDesc");
+
+        ////    $('.spinner-border').show();
+        ////    $.ajax({
+        ////        type: "get",
+        ////        url: window.URL,
+        ////        success: function (response) {
+        ////            console.log(response)
+        ////            $('.spinner-border').hide();
+        ////            location.reload();
+        ////        },
+        ////        error: function(xhr) {
+        ////            console.log("ERROR:")
+        ////            console.log(xhr);
+        ////        }
+        ////    });
+
+
+        ////}
+
+        //function getParameterByName(name, url = window.location.href) {
+        //    name = name.replace(/[\[\]]/g, '\\$&');
+        //    var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
+        //        results = regex.exec(url);
+        //    if (!results) return null;
+        //    if (!results[2]) return '';
+        //    return decodeURIComponent(results[2].replace(/\+/g, ' '));
+        //}
+
+        //function insertParam(key, value) {
+        //    key = encodeURIComponent(key);
+        //    value = encodeURIComponent(value);
+
+        //    var kvp = document.location.search.substr(1).split('&');
+        //    let i = 0;
+
+        //    for (; i < kvp.length; i++) {
+        //        if (kvp[i].startsWith(key + '=')) {
+        //            let pair = kvp[i].split('=');
+        //            pair[1] = value;
+        //            kvp[i] = pair.join('=');
+        //            break;
+        //        }
+        //    }
+
+        //    if (i >= kvp.length) {
+        //        kvp[kvp.length] = [key, value].join('=');
+        //    }
+
+        //    let params = kvp.join('&');
+
+        //    document.location.search = params;
+        //}
+
+    </script>
+}

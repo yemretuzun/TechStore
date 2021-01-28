@@ -3,36 +3,77 @@
 
 @{
     ViewData["Title"] = "Hesabım";
+ Layout = "_Layout";
+ var user = @UserManager.GetCurrentUser(Context);
+ var productservice = new TechStoreWebApp.Services.ProductsService();
 }
 
-@{
-}
 
 <div class="container">
-    <div class="text-center">
-        <h1 class="display-4">TechStore</h1>
+    <div class="jumbotron">
+        <div class="my-2 text-primary"> @user.FirstName @user.LastName</div>
+        <div class="my-2 text-secondary"> @user.Email</div>
     </div>
-    <p></p>
-    <div>
-        <span class="">DEBUG</span>
+    <div class="row">
+        <ul class="list-group ml-0 mr-auto w-25">
+            <li class="list-group-item list-group-item-action">
+                <i class="fas fa-shipping-fast"></i><a class="ml-2">Siparişlerim</a>
+            </li>
+            <li class="list-group-item list-group-item-action">
+                <i class="fas fa-map-marked-alt"></i><a class="ml-2">Adreslerim</a>
+            </li>
+            <li class="list-group-item list-group-item-action">
+                <i class="fas fa-heart"></i><a class="ml-2">Favorilerim</a>
+            </li>
+            <li class="list-group-item list-group-item-action">
+                <i class="fas fa-user-cog"></i><a class="ml-2">Ayarlarım</a>
+            </li>
+        </ul>
+        <div class="mr-0 ml-auto w-75">
+            @if (user.Orders.Count > 0)
+            {
+                <ul class="container">
+                    @foreach (var order in user.Orders)
+                    {
+                        <li class="card mb-2">
+                            <div class="card-body">
+                                <div class="card-header m-0">
+                                    <a class="">Sipariş Tarihi: </a>
+                                    <span class="">@order.OrderDate.ToString("dd MMMM yyyy | HH:mm:ss")</span>
+                                </div>
+                                <div class="d-inline-flex mt-3">
+                                    @{ var z_index = 1;}
+                                    @foreach (var item in order.Cart.Items.ToList())
+                                    {
+                                        var product = productservice.GetById(item.ProductId);
+                                        <img src="@product.Images.First()" 
+                                             class="rounded rounded-circle ml-n2 img-thumbnail img-fluid" 
+                                             height="48" width="48"
+                                             style="z-index:@z_index"/>
+                                        z_index++;
+                                    }
+                                </div>
+                                <div>
+                                    <a>Tutar: @order.Cart.TotalPrice.ToString("0,0.00") TL</a>
+                                </div>
+                            </div>
+                        </li>
+                                        }
+                </ul>
+            }
+            else
+            {
+                <div class="text-center align-items-center">
+                    Sipariş Yok
+                </div>
+            }
+        </div>
     </div>
-    <div class="">
-        <span class="">User.Identity.IsAuthenticated:</span> @User.Identity.IsAuthenticated
-    </div>
-    @if (this.User.Identity.IsAuthenticated)
-    {
-        <div class="">
-            <span class="">UserManager.GetCurrentUser(this.Context).Name:</span> @UserManager.GetCurrentUser(this.Context).FirstName
-        </div>
-        <div class="">
-            <span class="">User.HasClaim(ClaimTypes.Role, "Administrator"):</span> @User.HasClaim(ClaimTypes.Role, "Administrator")
-        </div>
-        <div class="">
-            <span class="">User.HasClaim("Permission", "DoEverything"):</span> @User.HasClaim("Permission", "DoEverything")
-        </div>
-    }
+
 </div>
 
 <style scoped>
-   
-    </style>
+    .list-group {
+        cursor: pointer;
+    }
+</style>

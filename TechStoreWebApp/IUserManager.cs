@@ -81,5 +81,10 @@ namespace TechStoreWebApp
     void SignOut(HttpContext httpContext);
     string GetCurrentUserId(HttpContext httpContext);
     User GetCurrentUser(HttpContext httpContext);
+
+
+    Cart GetCart(HttpContext httpContext);
+    bool AddItemToCart(HttpContext httpContext, string productId, uint quantity);
+    bool RemoveItemFromCart(HttpContext httpContext, string productId, uint quantity);
   }
 }

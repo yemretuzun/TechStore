@@ -11,6 +11,7 @@ namespace TechStoreWebApp.Services
         public RolePermissionService RolePermissionService;
         public PermissionService PermissionService;
         public UserRoleService UserRoleService;
+        public CartService CartService;
 
         public Services()
         {
@@ -22,6 +23,7 @@ namespace TechStoreWebApp.Services
             RolePermissionService = new RolePermissionService();
             PermissionService = new PermissionService();
             UserRoleService = new UserRoleService();
+            CartService = new CartService();
         }
     }
 }

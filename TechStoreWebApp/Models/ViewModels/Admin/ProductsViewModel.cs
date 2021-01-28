@@ -16,6 +16,7 @@ namespace TechStoreWebApp.Models.ViewModels.Admin
         public readonly BrandService BrandService;
         public readonly TechnicalSpecsService TechnicalSpecsService;
         public Product CreateProduct;
+        private IEnumerable<Product> _products;
 
         public ProductsViewModel()
         {
@@ -24,10 +25,16 @@ namespace TechStoreWebApp.Models.ViewModels.Admin
             BrandService = new BrandService();
             CreateProduct = new Product();
             TechnicalSpecsService = new TechnicalSpecsService();
+
+            _products = Service.GetAll() ?? new List<Product>() { new Product() { Id = "veri yok" } };
+            Sort(SortType.Default);
         }
 
-
-        public IEnumerable<Product> Products =>  Service.GetAll() ?? new List<Product>(){new Product(){Id = "veri yok"}};
+        public IEnumerable<Product> Products 
+        {
+            get { return _products; }
+            set { _products = value; }
+        }
 
         public Category ProductCategory(string id) => CategoryService.GetById(id);
 
@@ -79,6 +86,84 @@ namespace TechStoreWebApp.Models.ViewModels.Admin
             return items;
 
             
+        }
+
+        /// <summary>
+        /// Ürün sıralama türleri.
+        /// </summary>
+        public enum SortType 
+        {
+            /// <summary>
+            /// Id'ye göre 
+            /// </summary>
+            Default,
+            /// <summary>
+            /// Fiyat artan
+            /// </summary>
+            Price,
+            /// <summary>
+            /// Fiyat azalan
+            /// </summary>
+            PriceDesc, 
+            /// <summary>
+            /// Puana göre
+            /// </summary>
+            Ratings,
+            /// <summary>
+            /// Yorum sayısına göre
+            /// </summary>
+            Reviews,
+        }
+
+        public string SelectedSortType { get; set; }
+
+        /// <summary>
+        /// Ürünleri sırala.
+        /// </summary>
+        public void Sort(SortType sortType) 
+        {
+
+            if (sortType == SortType.Price)
+            {
+                Products = Products.OrderBy(p => p.Price).ToList();
+                SelectedSortType = SortType.Price.ToString();
+            }
+            else if (sortType == SortType.PriceDesc)
+            {
+                Products = Products.OrderByDescending(p => p.Price).ToList();
+                SelectedSortType = SortType.PriceDesc.ToString();
+
+            }
+            else if (sortType == SortType.Ratings)
+            {
+                Products = Products.OrderByDescending(p => p.Ratings).ToList();
+                SelectedSortType = SortType.Ratings.ToString();
+
+            }
+            else if (sortType == SortType.Reviews)
+            {
+                Products = Products.OrderByDescending(p => p.Reviews.Count()).ToList();
+                SelectedSortType = SortType.Reviews.ToString();
+            }
+            else
+            {
+                Products = Products.OrderBy(p => p.Id).ToList();
+                SelectedSortType = SortType.Default.ToString();
+            }
+        }
+
+        public void Sort(string sortType)
+        {
+            var type = SortType.Default;
+            try
+            {
+                type = Enum.Parse<SortType>(sortType);
+            }
+            catch (Exception) 
+            {
+            }
+
+            Sort(type);
         }
 
 

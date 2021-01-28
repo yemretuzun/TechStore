@@ -3,31 +3,65 @@
 @using TechStoreWebApp.Models.ViewModels.Admin
 
 @{
-    var productViewModel = new ProductsViewModel();
     ViewData["Title"] = "Anasayfa";
+
+    var productViewModel = new ProductsViewModel();
+    var brandsViewModel = new BrandsViewModel();
+
+    var brandsList = brandsViewModel.Brands.ToList();
+    var productsList = productViewModel.Products.ToList();
+
+    string priceFormat(float price)
+    {
+        return price.ToString("0,0.00");
+    }
 }
 
 <div class="container">
-    <div class="text-center align-middle jumbotron mt-3">
-        <h1 class="display-4">TechStore</h1>
+    <div class="text-center align-middle jumbotron mt-3 py-3">
+        <h1 class="display-4">TechStore @Html.ActionLink("HEPSİNİ GÖR", "Index", "AllProducts", new { orderBy = "Price" })</h1>
+        <h1 class="display-4">TechStore @Html.ActionLink("Marka: MSI", "Index", "AllProducts", new { brandId = "5fcbf2c58f3f7e8d0f9c72df", orderBy = "Price" })</h1>
+        @*<h1 class="display-4">TechStore @Html.ActionLink("Marka: Apple | Cat: Telefon", "Index", "AllProducts", new { brandId = "5fe62a09024506294b6f31b2", categoryId = "5fda8268227fc7339e9f2c94", orderBy = "Price" })</h1>*@
+    </div>
+    @*MARKALAR*@
+    <div class="text-xl text-gray-500" style="font-family:Roboto;">
+        TÜM MARKALAR
+    </div>
+    <div class="d-inline-flex flex-row px-2 py-3 mb-4 bg-gray-600 w-100 justify-content-around">
+        @foreach (var brand in brandsList)
+        {
+            var imgSrc = string.IsNullOrEmpty(brand.LogoImage)
+                ? "https://storage-asset.msi.com/event/msi_main_menu/images/msi_logo.png"
+                : brand.LogoImage;
+
+            <div class="m-3 my-auto position-relative">
+                <img class="img-responsive cursor-pointer"
+                     src="@imgSrc"
+                     style="max-height:75px !important;" />
+                <a asp-action="Index" asp-controller="AllProducts" asp-route-brandId="@brand.Id" class="stretched-link"></a>
+            </div>
+        }
     </div>
 
     <div class="text-xl text-gray-500">
         MSI
     </div>
-    <div class="mt-3 grid sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 sm:gap-3 md:gap-4">
+    <div class="mt-3  mb-4 grid sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 sm:gap-3 md:gap-4">
         @if (productViewModel.Products.Any())
         {
-            var list = productViewModel.Products.Where(p => p.Title.Contains("MSI", StringComparison.InvariantCultureIgnoreCase)).ToList().Take(5);
+            var list = productsList.Where(p => p.Title.Contains("MSI", StringComparison.InvariantCultureIgnoreCase)).ToList().Take(5);
 
             @for (var i = 0; i < list.Count(); i++)
             {
                 <div class="card max-w-md shadow-md p-5 text-center d-flex flex-column align-items-around">
                     <div class="max-w-lg mt-auto text-center">
-                        <img class="img-responsive" width="120" height="120" src="@list.ElementAtOrDefault(i)?.Images.FirstOrDefault()" />
+                        <img class="img-responsive align-self-center mx-auto" width="120" height="120" src="@list.ElementAtOrDefault(i)?.Images.FirstOrDefault()" />
                     </div>
-                    <div class="mt-auto truncate ">
-                        @list.ElementAtOrDefault(i)?.Title
+                    <div class="mt-auto text-truncate-3 ">
+                        <a asp-action="p/{productId}" asp-controller="ProductDetails" asp-route-productId="@list.ElementAtOrDefault(i)?.Id">
+
+                        </a>
+                        @Html.ActionLink(@list.ElementAtOrDefault(i)?.Title, "Index", "ProductDetails", new { productId = @list.ElementAtOrDefault(i)?.Id })
                     </div>
                     <div class="mt-auto">
                         <select id="0_@i" data-ratings="@list.ElementAtOrDefault(i)?.Ratings">
@@ -39,46 +73,148 @@
                         </select>
                     </div>
                     <div class="mt-auto">
-                        <a href="#" class="btn btn-block bg-blue-600 text-white">Sepete Ekle</a>
+                        <span class="">@priceFormat(@list.ElementAtOrDefault(i).Price)  <i class="fas fa-lira-sign text-gray-400"></i></span>
                     </div>
+                    <div class="mt-auto">
+                        <form id="sepeteEkleForm">
+                            <input type="hidden"
+                                   name="ProductId"
+                                   value="@list.ElementAtOrDefault(i)?.Id" />
+                            <input type="hidden"
+                                   name="Quantity"
+                                   value="1" />
+                            <input type="hidden"
+                                   name="UserId"
+                                   value="@UserManager.GetCurrentUserId(Context)" />
+                            <button type="submit"
+                                    class="btn btn-block bg-blue-600 text-white"
+                                    asp-controller="Cart"
+                                    asp-action="AddToCart">
+                                Sepete Ekle
+                            </button>
+                        </form>
+                    </div>
+
                 </div>
             }
         }
     </div>
 
-    <div class="mt-5 text-xl text-gray-500">
+    <div class="text-xl text-gray-500">
         Monster
     </div>
-    <div class="mt-3 grid sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 sm:gap-3 md:gap-4">
+    <div class="mt-3  mb-4 grid sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 sm:gap-3 md:gap-4">
         @if (productViewModel.Products.Any())
         {
-            var list = productViewModel.Products.Where(p => p.Title.Contains("Monster", StringComparison.InvariantCultureIgnoreCase)).ToList().Take(5);
+            var list = productsList.Where(p => p.Title.Contains("Monster", StringComparison.InvariantCultureIgnoreCase)).ToList().Take(5);
 
             @for (var i = 0; i < list.Count(); i++)
             {
                 <div class="card max-w-md shadow-md p-5 text-center d-flex flex-column align-items-around">
                     <div class="max-w-lg mt-auto text-center">
-                        <img class="img-responsive" width="120" height="120" src="@list.ElementAtOrDefault(i)?.Images.FirstOrDefault()" />
+                        <img class="img-responsive align-self-center mx-auto" width="120" height="120" src="@list.ElementAtOrDefault(i)?.Images.FirstOrDefault()" />
                     </div>
-                    <div class="mt-auto overflow-clip overflow-hidden">
-                        @list.ElementAtOrDefault(i)?.Title
+                    <div class="mt-auto text-truncate-3 ">
+                        <a asp-action="p/{productId}" asp-controller="ProductDetails" asp-route-productId="@list.ElementAtOrDefault(i)?.Id">
+
+                        </a>
+                        @Html.ActionLink(@list.ElementAtOrDefault(i)?.Title, "Index", "ProductDetails", new { productId = @list.ElementAtOrDefault(i)?.Id })
                     </div>
                     <div class="mt-auto">
-                        <select id="1_@i" data-ratings="@list.ElementAtOrDefault(i)?.Ratings">
+                        <select id="1_@i" data-ratings="@list.ElementAtOrDefault(i).Ratings">
                             <option value="1">1</option>
                             <option value="2">2</option>
                             <option value="3">3</option>
+                            <option value="4">4</option>
                             <option value="4">4</option>
                             <option value="5">5</option>
                         </select>
                     </div>
                     <div class="mt-auto">
-                        <a href="#" class="btn btn-block bg-blue-600 text-white">Sepete Ekle</a>
+                        <span class="">@priceFormat(@list.ElementAtOrDefault(i).Price) <i class="fas fa-lira-sign text-gray-400"></i></span>
+                    </div>
+                    <div class="mt-auto">
+                        <form id="sepeteEkleForm">
+                            <input type="hidden"
+                                   name="ProductId"
+                                   value="@list.ElementAtOrDefault(i)?.Id" />
+                            <input type="hidden"
+                                   name="Quantity"
+                                   value="1" />
+                            <input type="hidden"
+                                   name="UserId"
+                                   value="@UserManager.GetCurrentUserId(Context)" />
+                            <button type="submit"
+                                    class="btn btn-block bg-blue-600 text-white"
+                                    asp-controller="Cart"
+                                    asp-action="AddToCart">
+                                Sepete Ekle
+                            </button>
+                        </form>
                     </div>
                 </div>
             }
         }
     </div>
+
+
+    <div class="text-xl text-gray-500">
+        Popüler Telefonlar
+    </div>
+    <div class="mt-3  mb-4 grid sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 sm:gap-3 md:gap-4">
+        @if (productViewModel.Products.Any())
+        {
+            var list = productsList.Where(p => p.CategoryId == "5fda8268227fc7339e9f2c94").ToList().Take(5).Reverse();
+
+            @for (var i = 0; i < list.Count(); i++)
+            {
+                <div class="card max-w-md shadow-md p-5 text-center d-flex flex-column align-items-around">
+                    <div class="max-w-lg mt-auto text-center">
+                        <img class="img-responsive align-self-center mx-auto" width="120" height="120" src="@list.ElementAtOrDefault(i)?.Images.FirstOrDefault()" />
+                    </div>
+                    <div class="mt-auto text-truncate-3 ">
+                        <a asp-action="p/{productId}" asp-controller="ProductDetails" asp-route-productId="@list.ElementAtOrDefault(i)?.Id">
+
+                        </a>
+                        @Html.ActionLink(@list.ElementAtOrDefault(i)?.Title, "Index", "ProductDetails", new { productId = @list.ElementAtOrDefault(i)?.Id })
+                    </div>
+                    <div class="mt-auto">
+                        <select id="2_@i" data-ratings="@list.ElementAtOrDefault(i).Ratings">
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                        </select>
+                    </div>
+                    <div class="mt-auto">
+                        <span class="">@priceFormat(@list.ElementAtOrDefault(i).Price) <i class="fas fa-lira-sign text-gray-400"></i></span>
+                    </div>
+                    <div class="mt-auto">
+                        <form id="sepeteEkleForm">
+                            <input type="hidden"
+                                   name="ProductId"
+                                   value="@list.ElementAtOrDefault(i)?.Id" />
+                            <input type="hidden"
+                                   name="Quantity"
+                                   value="1" />
+                            <input type="hidden"
+                                   name="UserId"
+                                   value="@UserManager.GetCurrentUserId(Context)" />
+                            <button type="submit"
+                                    class="btn btn-block bg-blue-600 text-white"
+                                    asp-controller="Cart"
+                                    asp-action="AddToCart">
+                                Sepete Ekle
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            }
+        }
+    </div>
+
 </div>
 
 <style scoped>
@@ -119,6 +255,18 @@
                 });
             }
 
+            for (var i = 0; i < 5; i++) {
+                let id = '#2_' + i;
+
+                $(id).barrating({
+                    theme: 'fontawesome-stars',
+                    initialRating: $(id).attr('data-ratings'),
+                    readonly: true
+                });
+            }
+
         });
+
+        
     </script>
 }

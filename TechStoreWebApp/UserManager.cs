@@ -276,5 +276,21 @@ namespace TechStoreWebApp
 
             return claims;
         }
+
+        
+        public Cart GetCart(HttpContext httpContext)
+        {
+            return _services.CartService.GetUserCart(GetCurrentUserId(httpContext)).Result;
+        }
+
+        public bool AddItemToCart(HttpContext httpContext, string productId, uint quantity)
+        {
+            return _services.CartService.AddProduct(GetCart(httpContext).Id, productId, quantity).Result;
+        }
+
+        public bool RemoveItemFromCart(HttpContext httpContext, string productId, uint quantity)
+        {
+            return _services.CartService.RemoveProduct(GetCart(httpContext).Id, productId, quantity).Result;
+        }
     }
 }
